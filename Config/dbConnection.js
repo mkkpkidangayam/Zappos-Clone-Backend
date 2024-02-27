@@ -1,7 +1,7 @@
-const { tryCatch } = require("../Middleware/trycatchHandler");
+const { tryCatchHandler  } = require("../Middleware/trycatchHandler");
 const mongoose = require("mongoose");
 
-const databaseConnect = tryCatch(async () => {
+const databaseConnect = tryCatchHandler (async () => {
   const connect = await mongoose.connect(process.env.MONGO_DB_URL);
   if (connect) {
     console.log(
@@ -9,6 +9,6 @@ const databaseConnect = tryCatch(async () => {
     );
   } else {
     console.log("Can't connect to database");
-  }
+  } 
 });
 module.exports = databaseConnect;
