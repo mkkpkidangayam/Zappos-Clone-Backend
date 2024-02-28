@@ -6,7 +6,6 @@ const config = require("../Config/config");
 const nodemailer = require("nodemailer");
 const CustomerModel = require("../Models/customerModel");
 
-
 // Send OTP to customer email ---------------
 const otpSendByEmail = tryCatchHandler(async (req, res) => {
   console.log("hellow we are here");
@@ -58,7 +57,6 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
   });
 });
 
-
 //Verify OTP and add user to database------------------
 const registerUser = tryCatchHandler(async (req, res) => {
   const { userData, otp } = req.body;
@@ -99,23 +97,40 @@ const registerUser = tryCatchHandler(async (req, res) => {
   });
 });
 
-
-
-
-
 //Customer Login-------------------
 const customerLogin = tryCatchHandler(async (req, res) => {
   const { email, password } = req.body;
-  customerModel.findOne({ email: email }).then((user) => {
-    if (user) {
-      if (user.password === password) {
-        res.json({ status: "success", userData: user });
-      } else {
-        res.json("The password is incorrect");
-      }
-    } else {
-      res.json("Invalid email address");
-    }
+
+  const user = await customerModel.findOne({ email });
+  if (!user) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid email address" });
+  }
+
+  const passwordMatch = await bcrypt.compare(password, user.password);
+
+  if (!passwordMatch) {
+    return res
+      .status(400)
+      .json({ success: false, message: "The password is incorrect" });
+  }
+
+  // Generate JWT
+  const token = jwt.sign(
+    {
+      userId: user._id,
+      email: user.email,
+    },
+    process.env.JWT_SECRET
+  );
+
+  // res.json({ token, });
+
+  res.status(200).json({
+    token: token,
+    message: "sign in successful. Start shopping...",
+    userData: user,
   });
 });
 

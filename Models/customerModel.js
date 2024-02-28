@@ -4,6 +4,21 @@ const moment = require("moment-timezone");
 // const { tryCatchHandler  } = require("../Middleware/trycatchHandler");
 
 
+const AddressSchema = new mongoose.Schema({
+  street: {
+    type: String,
+  },
+  city: {
+    type: String,
+  },
+  state: {
+    type: String,
+  },
+  postalCode: {
+    type: String,
+  },
+});
+
 const CustomerSchema = new mongoose.Schema(
   {
     name: {
@@ -26,16 +41,20 @@ const CustomerSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters"],
     },
-    wishlist: Array,
-    cart: Array,
-    order: Array,
-    address: Array,
+    wishlist: [String],
+    cart: [String],
+    order: [String],
+    address: [AddressSchema],
     createdAt: String,
     updatedAt: String,
   },
   { timestamps: true }
 );
 
+
+const CustomerModel = mongoose.model("customers", CustomerSchema);
+
+module.exports = CustomerModel;  
 // CustomerSchema.pre("save", trCatchHandler( async function (next) {
 //   if (!this.isModified("password")) {
 //     return next();
@@ -46,7 +65,3 @@ const CustomerSchema = new mongoose.Schema(
 //   this.updatedAt = nowIST;
 //   next();
 // }));
-
-const CustomerModel = mongoose.model("customers", CustomerSchema);
-
-module.exports = CustomerModel;  
