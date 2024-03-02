@@ -8,9 +8,7 @@ const CustomerModel = require("../Models/customerModel");
 
 // Send OTP to customer email ---------------
 const otpSendByEmail = tryCatchHandler(async (req, res) => {
-  console.log("hellow we are here");
   const { email } = req.body;
-  console.log("our email is ", email);
   // Check if user already exists
   const checkuser = await CustomerModel.findOne({ email: email });
 
@@ -26,8 +24,10 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
 
   console.log("Generated OTP: " + OTP);
 
+  const hashedOTP = await bcrypt.hash(OTP.toString(), 10)
+
   // Set OTP cookie
-  res.cookie("otp", OTP, { httpOnly: true });
+  res.cookie("otp", hashedOTP, { httpOnly: true, secure: true });
 
   // Send OTP to the user's email
   const transporter = nodemailer.createTransport({
@@ -63,7 +63,8 @@ const registerUser = tryCatchHandler(async (req, res) => {
   const { name, email, password } = userData;
 
   const otpInCookie = req.cookies.otp;
-  console.log("the otp is " + otpInCookie);
+
+
   const checkUser = await CustomerModel.find({ email: email });
 
   if (checkUser.length > 0) {
@@ -74,7 +75,9 @@ const registerUser = tryCatchHandler(async (req, res) => {
     return;
   }
 
-  if (otpInCookie != otp) {
+  const isOtpValid = await bcrypt.compare(otp, otpInCookie)
+
+  if (!isOtpValid) {
     res.status(400).json({
       message: "invalid otp",
       success: false,
