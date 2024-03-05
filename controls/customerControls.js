@@ -1,5 +1,5 @@
 const customerModel = require("../Models/customerModel");
-const { tryCatchHandler } = require("../Middleware/trycatchHandler");
+const tryCatchHandler = require("../Middleware/trycatchHandler");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const config = require("../Config/config");
