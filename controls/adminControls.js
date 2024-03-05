@@ -39,7 +39,7 @@ const adminLogin = tryCatchHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     message: "Login success",
-    adminToken,
+    adminToken: adminToken,
   });
   console.log("Admin login success");
 });

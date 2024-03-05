@@ -130,7 +130,7 @@ const customerLogin = tryCatchHandler(async (req, res) => {
 
   res.status(200).json({
     token: token,
-    message: "sign in successful. Start shopping...",
+    message: "Sign-in successful. Start shopping...",
     userData: user,
   });
 });
