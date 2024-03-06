@@ -11,7 +11,7 @@ const productSchema = new mongoos.Schema(
 
     description: {
       type: String,
-      maxlength: [100, "Description cannot exceed 100 characters"],
+      maxlength: [500, "Description cannot exceed 500 characters"],
     },
 
     price: {

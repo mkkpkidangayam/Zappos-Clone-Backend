@@ -13,32 +13,34 @@ const adminLogin = tryCatchHandler(async (req, res) => {
 
   const { username, password } = req.body;
 
-  const validation =
-    username === admin.username && password === admin.password ? true : false;
+  const validation = username === admin.username && password === admin.password;
 
   if (!validation) {
-    res.status(400).send("validation failed: incorrect username or password");
-    return;
+    return res.status(400).json({
+      success: false,
+      message: "validation failed: incorrect username or password"
+    })
+    
   }
 
   const adminToken = jwt.sign({ username: username }, process.env.JWT_SECRET, {
     expiresIn: "1hr",
   });
-  console.log(adminToken);
+  console.log("AdminToken:- ",adminToken);
 
-  res.cookie("adminAuth", adminToken);
+  res.cookie("adminToken", adminToken, {httpOnly: true});
 
-  const token = req.cookies.adminAuth;
-  if (!token) {
-    return res.status(400).json({
-      success: false,
-      message: "cookie issue",
-    });
-  }
+  // const token = await req.cookies.adminToken;
+  // if (!token) {
+  //   return res.status(400).json({
+  //     success: false,
+  //     message: "cookie issue",
+  //   });
+  // }
 
   res.status(200).json({
     success: true,
-    message: "Login success",
+    message: "Login success, Welcome admin",
     adminToken: adminToken,
   });
   console.log("Admin login success");
@@ -85,7 +87,7 @@ const addProduct = tryCatchHandler(async (req, res) => {
   const uploadedImages = [];
   for (const image of images) {
     const uploadImage = await cloudinary.uploader.upload(image);
-    uploadedImages.push(uploadImage.url)
+    uploadedImages.push(uploadImage.url);
   }
 
   const newProduct = new ProductModal({
