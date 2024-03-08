@@ -1,5 +1,5 @@
 const adminAuth = (req, res, next) => {
-  const token = req.cookies.adminAuth;
+  const token = req.cookies.adminToken;
 
   if (!token) {
     res.status(401).json({

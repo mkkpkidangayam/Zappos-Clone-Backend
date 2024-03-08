@@ -99,7 +99,7 @@ const addProduct = tryCatchHandler(async (req, res) => {
     gender,
     category,
     sizes,
-    color,
+    color,  
   });
 
   await newProduct.save();

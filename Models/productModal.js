@@ -24,10 +24,10 @@ const productSchema = new mongoos.Schema(
     },
    
 
-    image: {
-      type: [String],
-      required: [true, "Image URLs is required"],
-    },
+    // image: {
+    //   type: [String],
+    //   required: [true, "Image URLs is required"],
+    // },
 
     gender: {
       type: String,
