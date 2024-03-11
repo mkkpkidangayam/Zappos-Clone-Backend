@@ -29,6 +29,7 @@ const adminLogin = tryCatchHandler(async (req, res) => {
   console.log("AdminToken:- ",adminToken);
 
   res.cookie("adminToken", adminToken, {httpOnly: true});
+  
 
   // const token = await req.cookies.adminToken;
   // if (!token) {
@@ -66,7 +67,7 @@ const viewCustomers = tryCatchHandler(async (req, res) => {
 const addProduct = tryCatchHandler(async (req, res) => {
   const {
     title,
-    description,
+    info,
     price,
     brand,
     images,
@@ -84,18 +85,19 @@ const addProduct = tryCatchHandler(async (req, res) => {
     });
   }
 
-  const uploadedImages = [];
-  for (const image of images) {
-    const uploadImage = await cloudinary.uploader.upload(image);
-    uploadedImages.push(uploadImage.url);
-  }
+  // const uploadedImages = [];
+  // for (const image of images) {
+  //   const uploadImage = await cloudinary.uploader.upload(image);
+  //   uploadedImages.push(uploadImage.url);
+  // }
 
   const newProduct = new ProductModal({
     title,
-    description,
+    info,
     price,
     brand,
-    image: uploadedImages,
+    images,
+    // images: uploadedImages,
     gender,
     category,
     sizes,

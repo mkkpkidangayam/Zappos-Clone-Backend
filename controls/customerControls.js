@@ -22,9 +22,10 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
   // Generate OTP
   const OTP = Math.floor(1000 + Math.random() * 9000);
 
+
   console.log("Generated OTP: " + OTP);
 
-  const hashedOTP = await bcrypt.hash(OTP.toString(), 10)
+  const hashedOTP = await bcrypt.hash(OTP.toString(), 10);
 
   // Set OTP cookie
   res.cookie("otp", hashedOTP, { httpOnly: true, secure: true });
@@ -64,7 +65,6 @@ const registerUser = tryCatchHandler(async (req, res) => {
 
   const otpInCookie = req.cookies.otp;
 
-
   const checkUser = await CustomerModel.find({ email: email });
 
   if (checkUser.length > 0) {
@@ -75,7 +75,7 @@ const registerUser = tryCatchHandler(async (req, res) => {
     return;
   }
 
-  const isOtpValid = await bcrypt.compare(otp, otpInCookie)
+  const isOtpValid = await bcrypt.compare(otp, otpInCookie);
 
   if (!isOtpValid) {
     res.status(400).json({

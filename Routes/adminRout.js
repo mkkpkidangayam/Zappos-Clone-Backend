@@ -10,7 +10,8 @@ router.route("/admin/login").post(adminControl.adminLogin);
 router.route("/admin/users").get(adminAuth, adminControl.viewCustomers);
 
 // router.post("/admin/addproduct", adminAuth, upload.array("images", 6), adminControl.addProduct);
-router.post("/admin/addproduct", createProduct);
+router.post("/admin/addproduct", adminAuth, adminControl.addProduct);
+// router.post("/admin/addproduct", createProduct);
 
 
 module.exports = router

@@ -1,6 +1,6 @@
-const mongoos = require("mongoose");
+const mongoose = require("mongoose");
 
-const productSchema = new mongoos.Schema(
+const productSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -9,29 +9,33 @@ const productSchema = new mongoos.Schema(
       maxlength: [50, "Title cannot exceed 50 characters"],
     },
 
-    description: {
-      type: String,
-      maxlength: [500, "Description cannot exceed 500 characters"],
-    },
+    info: [
+      {
+        type: String,
+        maxlength: [500, "Description cannot exceed 500 characters"],
+      },
+    ],
 
     price: {
       type: Number,
       required: [true, "Price is required"],
       min: [0, "Price cannot be negative"],
     },
-    brand: {
-      type: String
-    },
-   
 
-    // image: {
-    //   type: [String],
-    //   required: [true, "Image URLs is required"],
-    // },
+    brand: {
+      type: String,
+    },
+
+    images: [
+      {
+        type: String,
+        required: [true, "Image URL is required"],
+      },
+    ],
 
     gender: {
       type: String,
-      require: [true, "product gender is required"],
+      required: [true, "Product gender is required"],
       enum: ["men", "women", "girls", "boys"],
     },
 
@@ -58,16 +62,19 @@ const productSchema = new mongoos.Schema(
         },
       },
     ],
-    color:{
+
+    color: {
       type: String,
-      required: true
+      required: true,
     },
+    //   createdAt: true,
+    //   updatedAt: true,
   },
   {
     timestamps: true,
   }
 );
 
-const ProductModal = mongoos.model("Product", productSchema);
+const ProductModel = mongoose.model("Product", productSchema);
 
-module.exports = ProductModal;
+module.exports = ProductModel;
