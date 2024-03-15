@@ -135,6 +135,7 @@ const customerLogin = tryCatchHandler(async (req, res) => {
   });
 });
 
+
 module.exports = {
   otpSendByEmail,
   registerUser,

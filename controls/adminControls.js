@@ -24,12 +24,11 @@ const adminLogin = tryCatchHandler(async (req, res) => {
   }
 
   const adminToken = jwt.sign({ username: username }, process.env.JWT_SECRET, {
-    expiresIn: "1hr",
   });
   console.log("AdminToken:- ",adminToken);
 
   res.cookie("adminToken", adminToken, {httpOnly: true});
-  
+  res.cookie("otp", hashedOTP, { httpOnly: true, secure: true });
 
   // const token = await req.cookies.adminToken;
   // if (!token) {
