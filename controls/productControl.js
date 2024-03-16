@@ -19,9 +19,9 @@ const getProducts = tryCatchHandler(async (req, res) => {
 
 //show products by id-----------------
 const getProductsById = tryCatchHandler(async (req, res) => {
-  const id = req.params.id;
+  const _id = req.params.id;
 
-  const productById = await ProductModel.findById(id);
+  const productById = await ProductModel.findById(_id);
 
   if (!productById) {
     res.status(401).json({

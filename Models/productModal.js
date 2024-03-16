@@ -67,8 +67,6 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    //   createdAt: true,
-    //   updatedAt: true,
   },
   {
     timestamps: true,
