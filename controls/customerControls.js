@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const config = require("../Config/config");
 const nodemailer = require("nodemailer");
 const CustomerModel = require("../Models/customerModel");
+const ProductModel = require("../Models/productModal");
 
 // Send OTP to customer email ---------------
 const otpSendByEmail = tryCatchHandler(async (req, res) => {
@@ -21,7 +22,6 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
 
   // Generate OTP
   const OTP = Math.floor(1000 + Math.random() * 9000);
-
 
   console.log("Generated OTP: " + OTP);
 
@@ -135,9 +135,30 @@ const customerLogin = tryCatchHandler(async (req, res) => {
   });
 });
 
+//Products adding to cart-------------------
+const addToCart = tryCatchHandler(async (req, res) => {
+  const { userId, productId, quantity } = req.body;
+  const user = await CustomerModel.findById(userId);
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  const product = await ProductModel.findById(productId);
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
+  }
+
+  user.cart.push({ product: productId, quantity });
+
+  await user.save()
+  res.status(201).json({message: "Product added to cart successfully"})
+
+});
 
 module.exports = {
   otpSendByEmail,
   registerUser,
   customerLogin,
+  addToCart
 };
