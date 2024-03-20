@@ -8,5 +8,6 @@ router.route("/otpsend").post(controller.otpSendByEmail);
 router.route("/login").post(controller.customerLogin);
 
 router.route("/add-to-cart").post(controller.addToCart)
+router.route("/get-cart/:id").post(controller.getCart)
 
 module.exports = router;

@@ -128,8 +128,6 @@ const customerLogin = tryCatchHandler(async (req, res) => {
     process.env.JWT_SECRET
   );
 
-
-
   res.status(200).json({
     token: token,
     message: "Sign-in successful. Start shopping...",
@@ -139,8 +137,8 @@ const customerLogin = tryCatchHandler(async (req, res) => {
 
 //Products adding to cart-------------------
 const addToCart = tryCatchHandler(async (req, res) => {
-  const { userId, productId, quantity } = req.body;
-  
+  const { userId, productId, size, quantity } = req.body;
+
   if (!userId || !productId || !quantity) {
     return res.status(400).json({ message: "Invalid input data" });
   }
@@ -156,16 +154,34 @@ const addToCart = tryCatchHandler(async (req, res) => {
     return res.status(404).json({ message: "Product not found" });
   }
 
-  user.cart.push({ product: product, quantity });
+  const existingCartItem = user.cart.find(
+    (item) => item.product.toString() === productId && item.size === size
+  );
+  if (existingCartItem) {
+    existingCartItem.quantity += quantity;
+  } else {
+    user.cart.push({ product: product, size, quantity });
+  }
 
-  await user.save()
-  res.status(201).json({message: "Product added to cart successfully"})
+  await user.save();
+  res.status(201).json({ message: "Product added to cart successfully" });
+});
 
+//Gert cart-------------------------
+const getCart = tryCatchHandler(async (req, res) => {
+  const userId = req.params.id;
+  const user = await customerModel.findById(userId);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  res.status(200).json({ cart: user.cart });
 });
 
 module.exports = {
   otpSendByEmail,
   registerUser,
   customerLogin,
-  addToCart
+  addToCart,
+  getCart,
 };
