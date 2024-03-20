@@ -7,6 +7,6 @@ router.route("/register").post(controller.registerUser);
 router.route("/otpsend").post(controller.otpSendByEmail);
 router.route("/login").post(controller.customerLogin);
 
-router.route("/add-to-cart").post(authentication, controller.addToCart)
+router.route("/add-to-cart").post(controller.addToCart)
 
 module.exports = router;

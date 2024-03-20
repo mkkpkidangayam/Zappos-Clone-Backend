@@ -128,6 +128,8 @@ const customerLogin = tryCatchHandler(async (req, res) => {
     process.env.JWT_SECRET
   );
 
+
+
   res.status(200).json({
     token: token,
     message: "Sign-in successful. Start shopping...",
@@ -138,6 +140,11 @@ const customerLogin = tryCatchHandler(async (req, res) => {
 //Products adding to cart-------------------
 const addToCart = tryCatchHandler(async (req, res) => {
   const { userId, productId, quantity } = req.body;
+  
+  if (!userId || !productId || !quantity) {
+    return res.status(400).json({ message: "Invalid input data" });
+  }
+
   const user = await CustomerModel.findById(userId);
 
   if (!user) {
@@ -149,7 +156,7 @@ const addToCart = tryCatchHandler(async (req, res) => {
     return res.status(404).json({ message: "Product not found" });
   }
 
-  user.cart.push({ product: productId, quantity });
+  user.cart.push({ product: product, quantity });
 
   await user.save()
   res.status(201).json({message: "Product added to cart successfully"})

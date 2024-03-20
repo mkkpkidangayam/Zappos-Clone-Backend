@@ -41,9 +41,9 @@ const CustomerSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters"],
     },
-    wishlist: [String],
-    cart: [String],
-    order: [String],
+    wishlist: Array,
+    cart: Array,
+    order: Array,
     address: [AddressSchema],
     createdAt: String,
     updatedAt: String,
@@ -55,13 +55,3 @@ const CustomerSchema = new mongoose.Schema(
 const CustomerModel = mongoose.model("customers", CustomerSchema);
 
 module.exports = CustomerModel;  
-// CustomerSchema.pre("save", trCatchHandler( async function (next) {
-//   if (!this.isModified("password")) {
-//     return next();
-//   }
-//   this.password = await bcrypt.hash(this.password, 10);
-//   const nowIST = moment().tz("Asia/Kolkata").format("YYYY-MM-DDTHH:mm:ss.SSSZ");
-//   this.createdAt = this.createdAt || nowIST;
-//   this.updatedAt = nowIST;
-//   next();
-// }));
