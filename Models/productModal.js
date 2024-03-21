@@ -26,12 +26,10 @@ const productSchema = new mongoose.Schema(
       type: String,
     },
 
-    images: [
-      {
-        type: String,
-        required: [true, "Image URL is required"],
-      },
-    ],
+    images: {
+      type: Array,
+      required: true,
+    },
 
     gender: {
       type: String,
