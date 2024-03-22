@@ -174,8 +174,32 @@ const getCart = tryCatchHandler(async (req, res) => {
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
-  const userCart= user.cart
+  const userCart = user.cart;
   res.status(200).json(userCart);
+});
+
+//Upadte Cart-------------------------
+const updateCart = tryCatchHandler(async (req, res) => {
+  const userId = req.params.userId;
+  const updatedCart = req.body;
+
+  await customerModel.findByIdAndUpdate({ _id: userId }, { cart: updatedCart });
+  res.status(200).json({ message: "Cart updated successfully" });
+});
+
+//Remove Item from Cart---------------------
+const removeCartItem = tryCatchHandler(async (req, res) => {
+  const userId = req.params.userId;
+  const itemId = req.params.itemId;
+
+  const user = await customerModel.findById(userId);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  user.cart = user.cart.filter((item) => item._id !== itemId);
+  await user.save();
+  res.status(200).json({ message: "Item removed from cart successfully" });
 });
 
 module.exports = {
@@ -184,4 +208,7 @@ module.exports = {
   customerLogin,
   addToCart,
   getCart,
+  updateCart,
+  removeCartItem,
+
 };
