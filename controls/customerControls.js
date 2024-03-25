@@ -6,6 +6,7 @@ const config = require("../Config/config");
 const nodemailer = require("nodemailer");
 const CustomerModel = require("../Models/customerModel");
 const ProductModel = require("../Models/productModal");
+const { default: mongoose } = require("mongoose");
 
 // Send OTP to customer email ---------------
 const otpSendByEmail = tryCatchHandler(async (req, res) => {
@@ -192,15 +193,42 @@ const removeCartItem = tryCatchHandler(async (req, res) => {
   const userId = req.params.userId;
   const itemId = req.params.itemId;
 
-  const user = await customerModel.findById(userId);
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
-  }
+  try {
+    const updatedUser = await customerModel.findByIdAndUpdate(
+      userId,
+      { $pull: { cart: { _id: itemId } } },
+      { new: true }
+    );
 
-  user.cart = user.cart.filter((item) => item._id !== itemId);
-  await user.save();
-  res.status(200).json({ message: "Item removed from cart successfully" });
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const updatedCart = updatedUser.cart
+
+    res.status(200).json({ message: "Item removed from cart successfully",updatedCart } );
+  } catch (error) {
+    console.error("Error removing item from cart:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
+
+
+// const removeCartItem = tryCatchHandler(async (req, res) => {
+//   const userId = req.params.userId;
+//   const itemId = req.params.itemId;
+
+//   const user = await customerModel.findById(userId);
+//   if (!user) {
+//     return res.status(404).json({ message: "User not found" });
+//   }
+
+//   console.log("asdfghjkl");
+//   const itemIdObj = mongoose.Types.ObjectId(itemId)
+//   user.cart = user.cart.filter((item) => item.product._id.equals(itemIdObj));
+//   // user.cart = user.cart.filter((item) => item.product._id !== itemId);
+//   await user.save();
+//   res.status(200).json({ message: "Item removed from cart successfully" });
+// });
 
 module.exports = {
   otpSendByEmail,
