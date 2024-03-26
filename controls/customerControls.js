@@ -203,15 +203,16 @@ const removeCartItem = tryCatchHandler(async (req, res) => {
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
-    const updatedCart = updatedUser.cart
+    const updatedCart = updatedUser.cart;
 
-    res.status(200).json({ message: "Item removed from cart successfully",updatedCart } );
+    res
+      .status(200)
+      .json({ message: "Item removed from cart successfully", updatedCart });
   } catch (error) {
     console.error("Error removing item from cart:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
 
 // const removeCartItem = tryCatchHandler(async (req, res) => {
 //   const userId = req.params.userId;
@@ -238,5 +239,4 @@ module.exports = {
   getCart,
   updateCart,
   removeCartItem,
-
 };
