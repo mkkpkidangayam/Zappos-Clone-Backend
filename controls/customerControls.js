@@ -231,6 +231,42 @@ const removeCartItem = tryCatchHandler(async (req, res) => {
 //   res.status(200).json({ message: "Item removed from cart successfully" });
 // });
 
+const addWishlist = tryCatchHandler(async (req, res) => {
+  const userId = req.body.userId;
+  const productId = req.body.productId;
+
+  const user = await customerModel.findById(userId);
+  const product = await ProductModel.findById(productId);
+
+  if (!user || !product) {
+    return res.status(404).json({
+      success: false,
+      message: "User or product not found",
+    });
+  }
+
+  if (!user.wishlist) {
+    user.wishlist = [];
+  }
+
+  const isExist = user.wishlist.find(
+    (item) => item._id.toString() === productId.toString()
+  );
+
+  if (isExist) {
+    return res.status(400).json({
+      message: "Item is already in the wishlist",
+    });
+  } else {
+    user.wishlist.push(product);
+    await user.save();
+    return res.status(201).json({
+      message: "Item added to the wishlist successfully",
+      user: user,
+    });
+  }
+});
+
 module.exports = {
   otpSendByEmail,
   registerUser,
@@ -239,4 +275,5 @@ module.exports = {
   getCart,
   updateCart,
   removeCartItem,
+  addWishlist,
 };
