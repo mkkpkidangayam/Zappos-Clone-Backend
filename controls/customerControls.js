@@ -274,14 +274,17 @@ const displayWishlist = tryCatchHandler(async (req, res) => {
   const user = await customerModel.findById(userId);
 
   if (!user) {
-    res.status(404).json({
+    return res.status(404).json({
       success: false,
-      message: "Invalid Product",
+      message: "User not found",
     });
-  } else {
-    const wishListData = user.wishlist;
-    res.status(201).json(wishListData);
   }
+
+  const wishListData = user.wishlist;
+  return res.status(200).json({
+    success: true,
+    wishlist: wishListData,
+  });
 });
 
 module.exports = {
@@ -293,5 +296,5 @@ module.exports = {
   updateCart,
   removeCartItem,
   addWishlist,
-  displayWishlist
+  displayWishlist,
 };
