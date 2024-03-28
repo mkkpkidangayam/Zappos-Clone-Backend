@@ -13,5 +13,6 @@ router.route("/update-cart/:userId").put(controller.updateCart);
 router.route("/remove-from-cart/:userId/:itemId").delete(controller.removeCartItem);
 
 router.route("/add-to-wishlist").post(controller.addWishlist);
+router.route("/wishlist").get(controller.displayWishlist);
 
 module.exports = router;

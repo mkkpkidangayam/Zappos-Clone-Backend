@@ -267,6 +267,23 @@ const addWishlist = tryCatchHandler(async (req, res) => {
   }
 });
 
+// view product from wishlist
+const displayWishlist = tryCatchHandler(async (req, res) => {
+  const userId = req.params.id;
+
+  const user = await customerModel.findById(userId);
+
+  if (!user) {
+    res.status(404).json({
+      success: false,
+      message: "Invalid Product",
+    });
+  } else {
+    const wishListData = user.wishlist;
+    res.status(201).json(wishListData);
+  }
+});
+
 module.exports = {
   otpSendByEmail,
   registerUser,
@@ -276,4 +293,5 @@ module.exports = {
   updateCart,
   removeCartItem,
   addWishlist,
+  displayWishlist
 };
