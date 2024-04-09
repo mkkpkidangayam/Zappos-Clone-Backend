@@ -270,7 +270,7 @@ const addWishlist = tryCatchHandler(async (req, res) => {
 // view product from wishlist
 const displayWishlist = tryCatchHandler(async (req, res) => {
   const userId = req.params.id;
-
+console.log(userId);
   const user = await customerModel.findById(userId);
 
   if (!user) {
