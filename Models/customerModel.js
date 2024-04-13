@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const moment = require("moment-timezone");
 // const { tryCatchHandler  } = require("../Middleware/trycatchHandler");
 
-
 const AddressSchema = new mongoose.Schema({
   street: {
     type: String,
@@ -42,7 +41,13 @@ const CustomerSchema = new mongoose.Schema(
       minlength: [6, "Password must be at least 6 characters"],
     },
     wishlist: Array,
-    cart: Array,
+    cart: [
+      {
+        product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+        size: { type: String },
+        quantity: { type: Number },
+      },
+    ],
     order: Array,
     address: [AddressSchema],
     createdAt: String,
@@ -51,7 +56,6 @@ const CustomerSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-
 const CustomerModel = mongoose.model("customers", CustomerSchema);
 
-module.exports = CustomerModel;  
+module.exports = CustomerModel;

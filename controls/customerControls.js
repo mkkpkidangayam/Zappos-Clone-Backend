@@ -137,6 +137,38 @@ const customerLogin = tryCatchHandler(async (req, res) => {
 });
 
 //Products adding to cart-------------------
+// const addToCart = tryCatchHandler(async (req, res) => {
+//   const { userId, productId, size, quantity } = req.body;
+
+//   if (!userId || !productId || !quantity) {
+//     return res.status(400).json({ message: "Invalid input data" });
+//   }
+
+//   const user = await CustomerModel.findById(userId);
+
+//   if (!user) {
+//     return res.status(404).json({ message: "User not found" });
+//   }
+
+//   const product = await ProductModel.findById(productId);
+//   if (!product) {
+//     return res.status(404).json({ message: "Product not found" });
+//   }
+
+//   const existingCartItem = user.cart.find((ele)=>{
+//     ele.product===productId
+//   });
+
+//   if (existingCartItem) {
+//     existingCartItem.quantity += quantity;
+//   } else {
+//     user.cart.push({ product, size, quantity });
+//   }
+
+//   await user.save();
+//   res.status(201).json({ message: "Product added to cart successfully" });
+// });
+
 const addToCart = tryCatchHandler(async (req, res) => {
   const { userId, productId, size, quantity } = req.body;
 
@@ -155,13 +187,16 @@ const addToCart = tryCatchHandler(async (req, res) => {
     return res.status(404).json({ message: "Product not found" });
   }
 
-  const existingCartItem = user.cart.find(
-    (item) => item.product.toString() === productId && item.size === size
+  const existingCartItemIndex = user.cart.findIndex(
+    (item) => item.product.toString() === productId
   );
-  if (existingCartItem) {
-    existingCartItem.quantity += quantity;
+
+  if (existingCartItemIndex !== -1) {
+    // If the product is already in the cart, update its quantity
+    user.cart[existingCartItemIndex].quantity += quantity;
   } else {
-    user.cart.push({ product: product, size, quantity });
+    // If the product is not in the cart, add it to the cart
+    user.cart.push({ product: productId, size, quantity });
   }
 
   await user.save();
@@ -270,7 +305,6 @@ const addWishlist = tryCatchHandler(async (req, res) => {
 // view product from wishlist
 const displayWishlist = tryCatchHandler(async (req, res) => {
   const userId = req.params.id;
-console.log(userId);
   const user = await customerModel.findById(userId);
 
   if (!user) {
