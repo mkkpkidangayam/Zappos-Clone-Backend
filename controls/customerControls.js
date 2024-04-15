@@ -206,7 +206,8 @@ const addToCart = tryCatchHandler(async (req, res) => {
 //Get cart-------------------------
 const getCart = tryCatchHandler(async (req, res) => {
   const userId = req.params.id;
-  const user = await customerModel.findById(userId);
+  const user = await customerModel.findById(userId).populate('cart.product')
+  console.log(user)
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }

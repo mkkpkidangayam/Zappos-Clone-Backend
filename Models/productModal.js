@@ -12,7 +12,6 @@ const productSchema = new mongoose.Schema(
     info: [
       {
         type: String,
-        maxlength: [500, "Description cannot exceed 500 characters"],
       },
     ],
 
@@ -26,16 +25,18 @@ const productSchema = new mongoose.Schema(
       type: String,
     },
 
-    images: {
-      type: Array,
-      required: true,
-    },
-
+    images: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
+    
     gender: {
       type: String,
       required: [true, "Product gender is required"],
       enum: ["men", "women", "girls", "boys"],
-    },
+    }, 
 
     category: {
       main: {

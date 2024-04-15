@@ -50,7 +50,7 @@ const CustomerSchema = new mongoose.Schema(
     ],
     order: Array,
     address: [AddressSchema],
-    createdAt: String,
+    createdAt: String, 
     updatedAt: String,
   },
   { timestamps: true }
