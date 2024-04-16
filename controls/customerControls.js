@@ -206,12 +206,12 @@ const addToCart = tryCatchHandler(async (req, res) => {
 //Get cart-------------------------
 const getCart = tryCatchHandler(async (req, res) => {
   const userId = req.params.id;
-  const user = await customerModel.findById(userId).populate('cart.product')
-  console.log(user)
+  const user = await customerModel.findById(userId).populate("cart.product");
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
   const userCart = user.cart;
+  console.log(userCart);
   res.status(200).json(userCart);
 });
 
@@ -249,23 +249,6 @@ const removeCartItem = tryCatchHandler(async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-
-// const removeCartItem = tryCatchHandler(async (req, res) => {
-//   const userId = req.params.userId;
-//   const itemId = req.params.itemId;
-
-//   const user = await customerModel.findById(userId);
-//   if (!user) {
-//     return res.status(404).json({ message: "User not found" });
-//   }
-
-//   console.log("asdfghjkl");
-//   const itemIdObj = mongoose.Types.ObjectId(itemId)
-//   user.cart = user.cart.filter((item) => item.product._id.equals(itemIdObj));
-//   // user.cart = user.cart.filter((item) => item.product._id !== itemId);
-//   await user.save();
-//   res.status(200).json({ message: "Item removed from cart successfully" });
-// });
 
 const addWishlist = tryCatchHandler(async (req, res) => {
   const userId = req.body.userId;
@@ -306,7 +289,7 @@ const addWishlist = tryCatchHandler(async (req, res) => {
 // view product from wishlist
 const displayWishlist = tryCatchHandler(async (req, res) => {
   const userId = req.params.id;
-  const user = await customerModel.findById(userId);
+  const user = await CustomerModel.findById(userId).populate("wishlist.product");
 
   if (!user) {
     return res.status(404).json({
@@ -316,10 +299,8 @@ const displayWishlist = tryCatchHandler(async (req, res) => {
   }
 
   const wishListData = user.wishlist;
-  return res.status(200).json({
-    success: true,
-    wishlist: wishListData,
-  });
+  console.log(wishListData);
+  return res.status(200).json(wishListData);
 });
 
 module.exports = {
