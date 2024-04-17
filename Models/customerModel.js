@@ -40,11 +40,9 @@ const CustomerSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters"],
     },
-    wishlist: [
-      {
-        product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
-      },
-    ],
+
+    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+
     cart: [
       {
         product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
@@ -54,8 +52,6 @@ const CustomerSchema = new mongoose.Schema(
     ],
     order: Array,
     address: [AddressSchema],
-    createdAt: String,
-    updatedAt: String,
   },
   { timestamps: true }
 );

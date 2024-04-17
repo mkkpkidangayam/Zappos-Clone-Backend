@@ -14,5 +14,7 @@ router.route("/remove-from-cart/:userId/:itemId").delete(controller.removeCartIt
 
 router.route("/add-to-wishlist").post(controller.addWishlist);
 router.route("/wishlist/:id").get(controller.displayWishlist);
+router.route("/remove-from-wishlist/:userId/:productId").delete(controller.removeFromWislist);
+
 
 module.exports = router;

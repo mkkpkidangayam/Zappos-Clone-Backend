@@ -188,7 +188,7 @@ const addToCart = tryCatchHandler(async (req, res) => {
   }
 
   const existingCartItemIndex = user.cart.findIndex(
-    (item) => item.product.toString() === productId
+    (item) => item.product.toString() === productId && item.size === size
   );
 
   if (existingCartItemIndex !== -1) {
@@ -211,8 +211,7 @@ const getCart = tryCatchHandler(async (req, res) => {
     return res.status(404).json({ message: "User not found" });
   }
   const userCart = user.cart;
-  console.log(userCart);
-  res.status(200).json(userCart);
+  return res.status(200).json(userCart);
 });
 
 //Upadte Cart-------------------------
@@ -229,25 +228,20 @@ const removeCartItem = tryCatchHandler(async (req, res) => {
   const userId = req.params.userId;
   const itemId = req.params.itemId;
 
-  try {
-    const updatedUser = await customerModel.findByIdAndUpdate(
-      userId,
-      { $pull: { cart: { _id: itemId } } },
-      { new: true }
-    );
+  const updatedUser = await customerModel.findByIdAndUpdate(
+    userId,
+    { $pull: { cart: { _id: itemId } } },
+    { new: true }
+  );
 
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    const updatedCart = updatedUser.cart;
-
-    res
-      .status(200)
-      .json({ message: "Item removed from cart successfully", updatedCart });
-  } catch (error) {
-    console.error("Error removing item from cart:", error);
-    res.status(500).json({ message: "Internal server error" });
+  if (!updatedUser) {
+    return res.status(404).json({ message: "User not found" });
   }
+  const updatedCart = updatedUser.cart;
+
+  res
+    .status(200)
+    .json({ message: "Item removed from cart successfully", updatedCart });
 });
 
 const addWishlist = tryCatchHandler(async (req, res) => {
@@ -256,32 +250,37 @@ const addWishlist = tryCatchHandler(async (req, res) => {
 
   const user = await customerModel.findById(userId);
   const product = await ProductModel.findById(productId);
-
   if (!user || !product) {
     return res.status(404).json({
       success: false,
       message: "User or product not found",
     });
   }
-
-  if (!user.wishlist) {
-    user.wishlist = [];
-  }
-
-  const isExist = user.wishlist.find(
-    (item) => item._id.toString() === productId.toString()
-  );
-
-  if (isExist) {
-    return res.status(400).json({
-      message: "Item is already in the wishlist",
+  
+  // Check if the product is already in the wishlist
+  const productCheck = user.wishlist.includes(productId);
+  
+  if (productCheck) {
+    // If product is in the wishlist, remove it
+    await customerModel.updateOne(
+      { _id: userId }, 
+      { $pull: { wishlist: productId } } // Corrected field name and simplified update
+    );
+    return res.status(200).json({
+      success:false,
+      
+      message: "Product removed from wishlist",
     });
   } else {
-    user.wishlist.push(product);
-    await user.save();
-    return res.status(201).json({
-      message: "Item added to the wishlist successfully",
-      user: user,
+    // If product is not in the wishlist, add it
+    await customerModel.updateOne(
+      { _id: userId }, 
+      { $push: { wishlist: productId } } // Corrected field name and simplified update
+    );
+    return res.status(200).json({
+      success: true,
+      
+      message: "Product added to wishlist",
     });
   }
 });
@@ -289,7 +288,7 @@ const addWishlist = tryCatchHandler(async (req, res) => {
 // view product from wishlist
 const displayWishlist = tryCatchHandler(async (req, res) => {
   const userId = req.params.id;
-  const user = await CustomerModel.findById(userId).populate("wishlist.product");
+  const user = await customerModel.findById(userId).populate("wishlist");
 
   if (!user) {
     return res.status(404).json({
@@ -299,9 +298,36 @@ const displayWishlist = tryCatchHandler(async (req, res) => {
   }
 
   const wishListData = user.wishlist;
-  console.log(wishListData);
+
   return res.status(200).json(wishListData);
 });
+
+// Remove from Wishlist
+const removeFromWislist = tryCatchHandler(async (req, res) => {
+  const userId = req.params.userId;
+  const productId = req.params.productId;
+
+  const user = await CustomerModel.findById(userId);
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  user.wishlist = user.wishlist.filter((item) => !item.equals(productId));
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Product removed from wishlist",
+  });
+});
+
+
+  
+
 
 module.exports = {
   otpSendByEmail,
@@ -313,4 +339,5 @@ module.exports = {
   removeCartItem,
   addWishlist,
   displayWishlist,
+  removeFromWislist,
 };
