@@ -137,38 +137,6 @@ const customerLogin = tryCatchHandler(async (req, res) => {
 });
 
 //Products adding to cart-------------------
-// const addToCart = tryCatchHandler(async (req, res) => {
-//   const { userId, productId, size, quantity } = req.body;
-
-//   if (!userId || !productId || !quantity) {
-//     return res.status(400).json({ message: "Invalid input data" });
-//   }
-
-//   const user = await CustomerModel.findById(userId);
-
-//   if (!user) {
-//     return res.status(404).json({ message: "User not found" });
-//   }
-
-//   const product = await ProductModel.findById(productId);
-//   if (!product) {
-//     return res.status(404).json({ message: "Product not found" });
-//   }
-
-//   const existingCartItem = user.cart.find((ele)=>{
-//     ele.product===productId
-//   });
-
-//   if (existingCartItem) {
-//     existingCartItem.quantity += quantity;
-//   } else {
-//     user.cart.push({ product, size, quantity });
-//   }
-
-//   await user.save();
-//   res.status(201).json({ message: "Product added to cart successfully" });
-// });
-
 const addToCart = tryCatchHandler(async (req, res) => {
   const { userId, productId, size, quantity } = req.body;
 
