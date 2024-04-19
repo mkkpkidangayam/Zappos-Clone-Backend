@@ -23,6 +23,7 @@ const productSchema = new mongoose.Schema(
 
     brand: {
       type: String,
+      trim: true,
     },
 
     images: [
@@ -34,6 +35,7 @@ const productSchema = new mongoose.Schema(
     
     gender: {
       type: String,
+      trim: true,
       required: [true, "Product gender is required"],
       enum: ["men", "women", "girls", "boys"],
     }, 
@@ -41,11 +43,13 @@ const productSchema = new mongoose.Schema(
     category: {
       main: {
         type: String,
+        trim: true,
         required: [true, "Main category is required"],
         enum: ["shoe", "cloth", "accessories"],
       },
       sub: {
         type: String,
+        trim: true,
       },
     },
 
@@ -53,7 +57,7 @@ const productSchema = new mongoose.Schema(
       {
         size: {
           type: String,
-          required: true,
+          trim: true,
         },
         quantity: {
           type: Number,
@@ -65,6 +69,7 @@ const productSchema = new mongoose.Schema(
     color: {
       type: String,
       required: true,
+      trim: true, 
     },
   },
   {

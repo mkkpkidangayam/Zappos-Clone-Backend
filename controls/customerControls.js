@@ -294,8 +294,6 @@ const removeFromWislist = tryCatchHandler(async (req, res) => {
 });
 
 
-  
-
 
 module.exports = {
   otpSendByEmail,
