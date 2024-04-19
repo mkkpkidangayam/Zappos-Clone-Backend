@@ -50,6 +50,7 @@ const productSchema = new mongoose.Schema(
       sub: {
         type: String,
         trim: true,
+        required: [true, "Sub category is required"]
       },
     },
 
