@@ -6,12 +6,13 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, "Title is required"],
       trim: true,
-      maxlength: [50, "Title cannot exceed 50 characters"],
+      maxlength: [100, "Title cannot exceed 50 characters"],
     },
 
     info: [
       {
         type: String,
+        required: true,
       },
     ],
 
@@ -24,6 +25,7 @@ const productSchema = new mongoose.Schema(
     brand: {
       type: String,
       trim: true,
+      required: true,
     },
 
     images: [
@@ -32,13 +34,13 @@ const productSchema = new mongoose.Schema(
         required: true,
       },
     ],
-    
+
     gender: {
       type: String,
       trim: true,
       required: [true, "Product gender is required"],
       enum: ["men", "women", "girls", "boys"],
-    }, 
+    },
 
     category: {
       main: {
@@ -50,7 +52,7 @@ const productSchema = new mongoose.Schema(
       sub: {
         type: String,
         trim: true,
-        required: [true, "Sub category is required"]
+        required: [true, "Sub category is required"],
       },
     },
 
@@ -70,13 +72,35 @@ const productSchema = new mongoose.Schema(
     color: {
       type: String,
       required: true,
-      trim: true, 
+      trim: true,
     },
+
+    ratings: [
+      {
+        score: {
+          type: Number,
+          required: true,
+          min: 1,
+          max: 5,
+        },
+        customer: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "customers",
+          required: true,
+        },
+        comment: {
+          type: String,
+          required: false,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
+
+productSchema.index({ title: 'text' });
 
 const ProductModel = mongoose.model("Product", productSchema);
 

@@ -27,7 +27,7 @@ const adminLogin = tryCatchHandler(async (req, res) => {
   });
   console.log("AdminToken:- ",adminToken);
 
-  res.cookie("adminToken", adminToken, {httpOnly: true});
+  res.cookie("adminToken", adminToken);
   // res.cookie("otp", hashedOTP, { httpOnly: true, secure: true });
 
   // const token = await req.cookies.adminToken;

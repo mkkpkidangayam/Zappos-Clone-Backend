@@ -7,6 +7,12 @@ const nodemailer = require("nodemailer");
 const CustomerModel = require("../Models/customerModel");
 const ProductModel = require("../Models/productModal");
 const { default: mongoose } = require("mongoose");
+// const stripe = process.env.stripe_secret_key
+const stripe = "sk_test_51P7bVeSBKHzUp8h626uJkC2PrHYJ44zWC8mx2ND4x0Zd7KSX5RU37bMKwTvhPeln6a9jW2OSGfVj3n8LQKvQZJCX00Ds1EIQJ6"
+console.log("stripe",stripe);
+const stripeID = require("stripe")(stripe);
+
+
 
 // Send OTP to customer email ---------------
 const otpSendByEmail = tryCatchHandler(async (req, res) => {
@@ -224,30 +230,30 @@ const addWishlist = tryCatchHandler(async (req, res) => {
       message: "User or product not found",
     });
   }
-  
+
   // Check if the product is already in the wishlist
   const productCheck = user.wishlist.includes(productId);
-  
+
   if (productCheck) {
     // If product is in the wishlist, remove it
     await customerModel.updateOne(
-      { _id: userId }, 
+      { _id: userId },
       { $pull: { wishlist: productId } } // Corrected field name and simplified update
     );
     return res.status(200).json({
-      success:false,
-      
+      success: false,
+
       message: "Product removed from wishlist",
     });
   } else {
     // If product is not in the wishlist, add it
     await customerModel.updateOne(
-      { _id: userId }, 
+      { _id: userId },
       { $push: { wishlist: productId } } // Corrected field name and simplified update
     );
     return res.status(200).json({
       success: true,
-      
+
       message: "Product added to wishlist",
     });
   }
@@ -293,6 +299,47 @@ const removeFromWislist = tryCatchHandler(async (req, res) => {
   });
 });
 
+const orderCart = async (req, res) => {
+  const { userId } = req.params;
+  console.log(userId);
+
+  const user = await CustomerModel.findById(userId);
+  console.log(user);
+
+  const cartData = user.cart; 
+
+  const line_items = [];
+
+  for (const cartItem of cartData) {
+    const product = await ProductModel.findById(cartItem.product);
+    if (!product) {
+      throw new Error(`Product with ID ${cartItem.product} not found`);
+    }
+    line_items.push({
+      price_data: {
+        currency: "inr",
+        product_data: {
+          name: product.title,
+        },
+        unit_amount: Math.round(product.price * 100),
+      },
+      quantity: cartItem.quantity,
+    });
+  }
+  // Create Stripe session
+  const session = await stripeID.checkout.sessions.create({
+    payment_method_types: ["card"],
+    mode: "payment",
+    line_items: line_items,
+    success_url: "",
+    cancel_url: "",
+  });
+  const sessionId = session.id;
+  const sessionUrl = session.url;
+  res.cookie("session", sessionId);
+  res.send(`Click to pay: ${sessionUrl}`);
+};
+
 
 
 module.exports = {
@@ -306,4 +353,5 @@ module.exports = {
   addWishlist,
   displayWishlist,
   removeFromWislist,
+  orderCart,
 };
