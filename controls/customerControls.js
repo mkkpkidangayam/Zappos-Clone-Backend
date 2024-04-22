@@ -1,4 +1,3 @@
-const customerModel = require("../Models/customerModel");
 const tryCatchHandler = require("../Middleware/trycatchHandler");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -8,11 +7,9 @@ const CustomerModel = require("../Models/customerModel");
 const ProductModel = require("../Models/productModal");
 const { default: mongoose } = require("mongoose");
 // const stripe = process.env.stripe_secret_key
-const stripe = "sk_test_51P7bVeSBKHzUp8h626uJkC2PrHYJ44zWC8mx2ND4x0Zd7KSX5RU37bMKwTvhPeln6a9jW2OSGfVj3n8LQKvQZJCX00Ds1EIQJ6"
-console.log("stripe",stripe);
+const stripe =
+  "sk_test_51P7bVeSBKHzUp8h626uJkC2PrHYJ44zWC8mx2ND4x0Zd7KSX5RU37bMKwTvhPeln6a9jW2OSGfVj3n8LQKvQZJCX00Ds1EIQJ6";
 const stripeID = require("stripe")(stripe);
-
-
 
 // Send OTP to customer email ---------------
 const otpSendByEmail = tryCatchHandler(async (req, res) => {
@@ -111,7 +108,7 @@ const registerUser = tryCatchHandler(async (req, res) => {
 const customerLogin = tryCatchHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await customerModel.findOne({ email });
+  const user = await CustomerModel.findOne({ email });
   if (!user) {
     return res
       .status(400)
@@ -180,7 +177,7 @@ const addToCart = tryCatchHandler(async (req, res) => {
 //Get cart-------------------------
 const getCart = tryCatchHandler(async (req, res) => {
   const userId = req.params.id;
-  const user = await customerModel.findById(userId).populate("cart.product");
+  const user = await CustomerModel.findById(userId).populate("cart.product");
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
@@ -193,7 +190,7 @@ const updateCart = tryCatchHandler(async (req, res) => {
   const userId = req.params.userId;
   const updatedCart = req.body;
 
-  await customerModel.findByIdAndUpdate({ _id: userId }, { cart: updatedCart });
+  await CustomerModel.findByIdAndUpdate({ _id: userId }, { cart: updatedCart });
   res.status(200).json({ message: "Cart updated successfully" });
 });
 
@@ -202,7 +199,7 @@ const removeCartItem = tryCatchHandler(async (req, res) => {
   const userId = req.params.userId;
   const itemId = req.params.itemId;
 
-  const updatedUser = await customerModel.findByIdAndUpdate(
+  const updatedUser = await CustomerModel.findByIdAndUpdate(
     userId,
     { $pull: { cart: { _id: itemId } } },
     { new: true }
@@ -222,7 +219,7 @@ const addWishlist = tryCatchHandler(async (req, res) => {
   const userId = req.body.userId;
   const productId = req.body.productId;
 
-  const user = await customerModel.findById(userId);
+  const user = await CustomerModel.findById(userId);
   const product = await ProductModel.findById(productId);
   if (!user || !product) {
     return res.status(404).json({
@@ -236,7 +233,7 @@ const addWishlist = tryCatchHandler(async (req, res) => {
 
   if (productCheck) {
     // If product is in the wishlist, remove it
-    await customerModel.updateOne(
+    await CustomerModel.updateOne(
       { _id: userId },
       { $pull: { wishlist: productId } } // Corrected field name and simplified update
     );
@@ -247,7 +244,7 @@ const addWishlist = tryCatchHandler(async (req, res) => {
     });
   } else {
     // If product is not in the wishlist, add it
-    await customerModel.updateOne(
+    await CustomerModel.updateOne(
       { _id: userId },
       { $push: { wishlist: productId } } // Corrected field name and simplified update
     );
@@ -262,7 +259,7 @@ const addWishlist = tryCatchHandler(async (req, res) => {
 // view product from wishlist
 const displayWishlist = tryCatchHandler(async (req, res) => {
   const userId = req.params.id;
-  const user = await customerModel.findById(userId).populate("wishlist");
+  const user = await CustomerModel.findById(userId).populate("wishlist");
 
   if (!user) {
     return res.status(404).json({
@@ -299,14 +296,25 @@ const removeFromWislist = tryCatchHandler(async (req, res) => {
   });
 });
 
-const orderCart = async (req, res) => {
-  const { userId } = req.params;
-  console.log(userId);
+//Add shipping address------------------
+const addAddress = tryCatchHandler(async(req, res) => {
+  const {userId} = req.params
+  const newAddress = req.body
 
   const user = await CustomerModel.findById(userId);
-  console.log(user);
+    user.address.push(newAddress);
+    await user.save();
+    res.status(201).send("Address added successfully");
+})
 
-  const cartData = user.cart; 
+
+// payment-----------------
+const orderCart = tryCatchHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  const user = await CustomerModel.findById(userId);
+
+  const cartData = user.cart;
 
   const line_items = [];
 
@@ -331,16 +339,33 @@ const orderCart = async (req, res) => {
     payment_method_types: ["card"],
     mode: "payment",
     line_items: line_items,
-    success_url: "",
-    cancel_url: "",
+    success_url: `http://localhost:3000/payment-success/user/${userId}`,
+    cancel_url: `http://localhost:3000//payment-failure/user/${userId}`,
   });
   const sessionId = session.id;
   const sessionUrl = session.url;
   res.cookie("session", sessionId);
-  res.send(`Click to pay: ${sessionUrl}`);
-};
+  res.send(sessionUrl);
+});
+
+//after payment-------------------------
+const paymentSuccess = tryCatchHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  const user = await CustomerModel.findById(userId);
+  if (!user) {
+    return res.status(404).send("User not found");
+  }
 
 
+  if (user.cart && user.cart.length > 0) {
+    user.order.push(...user.cart)
+    user.cart = [];
+    await user.save();
+  } else {
+    res.status(400).send("Cart is empty or not found");
+  }
+});
 
 module.exports = {
   otpSendByEmail,
@@ -354,4 +379,6 @@ module.exports = {
   displayWishlist,
   removeFromWislist,
   orderCart,
+  paymentSuccess,
+  addAddress
 };

@@ -6,16 +6,25 @@ const moment = require("moment-timezone");
 const AddressSchema = new mongoose.Schema({
   street: {
     type: String,
+    required: [true, "street is required"],
   },
   city: {
     type: String,
+    required: [true, "city is required"],
   },
   state: {
     type: String,
+    required: [true, "State is required"],
   },
-  postalCode: {
+  zipCode: {
     type: String,
+    required: [true, "zipCode is required"],
   },
+  phoneNumber: {
+    type: String,
+    required: [true, "phoneNumber is required"],
+  },
+  label: String
 });
 
 const CustomerSchema = new mongoose.Schema(
