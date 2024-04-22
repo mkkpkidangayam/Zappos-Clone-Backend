@@ -362,6 +362,9 @@ const goToPayment = tryCatchHandler(async (req, res) => {
   const { addressId } = req.body;
 
   const user = await CustomerModel.findById(userId);
+  if (!user) {
+    return res.status(404).send("User not found");
+  }
 
   const cartData = user.cart;
 
@@ -383,6 +386,7 @@ const goToPayment = tryCatchHandler(async (req, res) => {
       quantity: cartItem.quantity,
     });
   }
+
   // Create Stripe session
   const session = await stripeID.checkout.sessions.create({
     payment_method_types: ["card"],
@@ -397,22 +401,52 @@ const goToPayment = tryCatchHandler(async (req, res) => {
   res.send(sessionUrl);
 });
 
-//after payment-------------------------
+//create order-------------------------
 const createOrder = tryCatchHandler(async (req, res) => {
   const { userId } = req.params;
+  const { selectedAddressId } = req.body;
 
   const user = await CustomerModel.findById(userId);
   if (!user) {
     return res.status(404).send("User not found");
   }
 
-  if (user.cart && user.cart.length > 0) {
-    const newOrder = {
-      items: user.cart,
-      orderTime: new Date(),
-    };
+  const shippingAddress = user.address.find(
+    (addr) => addr._id.toString() === selectedAddressId
+  );
+  if (!shippingAddress) {
+    return res.status(404).send("Address not found");
+  }
 
-    user.order.push(newOrder);
+  if (user.cart && user.cart.length > 0) {
+    for (const cartItem of user.cart) {
+      const product = await ProductModel.findById(cartItem.product);
+      if (!product) {
+        return res.status(404).send(`Product not found: ${cartItem.product}`);
+      }
+
+      const sizeIndex = product.sizes.findIndex((size) => size.size === cartItem.size);
+      if (sizeIndex === -1) {
+        return res.status(400).send(`Size ${cartItem.size} not found for product: ${product.title}`);
+      }
+
+      if (product.sizes[sizeIndex].quantity < cartItem.quantity) {
+        return res.status(400).send(`Insufficient quantity for size ${cartItem.size} of product: ${product.title}`);
+      }
+
+      product.sizes[sizeIndex].quantity -= cartItem.quantity;
+      await product.save();
+    }
+
+    const newOrder = user.cart.map((item) => ({
+      item: item.product,
+      size: item.size,
+      quantity: item.quantity,
+      address: shippingAddress,
+      orderTime: new Date(),
+    }));
+
+    user.order.push(...newOrder);
     user.cart = [];
     await user.save();
     res.status(200).send("Order created successfully");
@@ -420,6 +454,7 @@ const createOrder = tryCatchHandler(async (req, res) => {
     res.status(400).send("Cart is empty or not found");
   }
 });
+
 
 module.exports = {
   otpSendByEmail,

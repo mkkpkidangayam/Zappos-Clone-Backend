@@ -61,6 +61,17 @@ const CustomerSchema = new mongoose.Schema(
     ],
     order: [
       {
+        item: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        size: { type: String },
+        quantity: { type: Number },
+        address: {
+          type: AddressSchema,
+          required: true,
+        },
         orderTime: {
           type: Date,
           default: Date.now,
@@ -68,24 +79,24 @@ const CustomerSchema = new mongoose.Schema(
       },
     ],
     address: [AddressSchema],
-      // {
-      //   street: {
-      //     type: String,
-      //   },
-      //   city: {
-      //     type: String,
-      //   },
-      //   state: {
-      //     type: String,
-      //   },
-      //   zipCode: {
-      //     type: String,
-      //   },
-      //   phoneNumber: {
-      //     type: String,
-      //   },
-      //   label: String,
-      // },
+    // {
+    //   street: {
+    //     type: String,
+    //   },
+    //   city: {
+    //     type: String,
+    //   },
+    //   state: {
+    //     type: String,
+    //   },
+    //   zipCode: {
+    //     type: String,
+    //   },
+    //   phoneNumber: {
+    //     type: String,
+    //   },
+    //   label: String,
+    // },
     // ],
   },
   { timestamps: true }
