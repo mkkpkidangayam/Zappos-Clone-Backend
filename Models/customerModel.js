@@ -24,7 +24,7 @@ const AddressSchema = new mongoose.Schema({
     type: String,
     required: [true, "phoneNumber is required"],
   },
-  label: String
+  label: String,
 });
 
 const CustomerSchema = new mongoose.Schema(
@@ -60,7 +60,26 @@ const CustomerSchema = new mongoose.Schema(
       },
     ],
     order: Array,
-    address: [AddressSchema],
+    address: [
+      {
+        street: {
+          type: String,
+        },
+        city: {
+          type: String,
+        },
+        state: {
+          type: String,
+        },
+        zipCode: {
+          type: String,
+        },
+        phoneNumber: {
+          type: String,
+        },
+        label: String,
+      },
+    ],
   },
   { timestamps: true }
 );

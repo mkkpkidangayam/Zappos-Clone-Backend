@@ -297,7 +297,7 @@ const removeFromWislist = tryCatchHandler(async (req, res) => {
 });
 
 //Add shipping address------------------
-const addAddress = tryCatchHandler(async (req, res) => {
+const addNewAddress = tryCatchHandler(async (req, res) => {
   const { userId } = req.params;
   const newAddress = req.body;
 
@@ -305,6 +305,55 @@ const addAddress = tryCatchHandler(async (req, res) => {
   user.address.push(newAddress);
   await user.save();
   res.status(201).send("Address added successfully");
+});
+
+//Edit address
+const editAddress = tryCatchHandler(async (req, res) => {
+  const { userId, addressId } = req.params;
+  const updatedAddress = req.body;
+
+  const user = await CustomerModel.findById(userId);
+
+  const addressIndex = user.address.findIndex(
+    (addr) => addr._id.toString() === addressId
+  );
+  if (addressIndex === -1) {
+    return res.status(404).send("Address not found");
+  }
+
+  user.address[addressIndex] = updatedAddress;
+
+  await user.save();
+
+  res.status(200).send("Address updated successfully");
+});
+
+//Fetch address
+const getAddresses = tryCatchHandler(async (req, res) => {
+  const { userId } = req.params;
+  const user = await CustomerModel.findById(userId);
+
+  if (!user) {
+    return res.status(404).send("User not found");
+  }
+  res.status(200).json(user.address);
+});
+
+//Delete address------------------
+const deleteAddress = tryCatchHandler(async (req, res) => {
+  const { userId, addressId } = req.params;
+
+  const user = await CustomerModel.findById(userId);
+
+  const addressIndex = user.address.findIndex(
+    (addr) => addr._id.toString() === addressId
+  );
+  if (addressIndex === -1) {
+    return res.status(404).send("Address not found");
+  }
+  user.address.splice(addressIndex, 1);
+  await user.save();
+  res.status(200).send("Address deleted successfully");
 });
 
 // payment-----------------
@@ -329,8 +378,10 @@ const orderCart = tryCatchHandler(async (req, res) => {
           name: product.title,
         },
         unit_amount: Math.round(product.price * 100),
+        // Size: cartItem.size,
       },
       quantity: cartItem.quantity,
+      
     });
   }
   // Create Stripe session
@@ -340,6 +391,7 @@ const orderCart = tryCatchHandler(async (req, res) => {
     line_items: line_items,
     success_url: `http://localhost:3000/payment-success/user/${userId}`,
     cancel_url: `http://localhost:3000//payment-failure/user/${userId}`,
+    
   });
   const sessionId = session.id;
   const sessionUrl = session.url;
@@ -378,5 +430,8 @@ module.exports = {
   removeFromWislist,
   orderCart,
   paymentSuccess,
-  addAddress,
+  addNewAddress,
+  editAddress,
+  getAddresses,
+  deleteAddress,
 };

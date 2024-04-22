@@ -12,7 +12,10 @@ router.route("/get-cart/:id").get(controller.getCart);
 router.route("/update-cart/:userId").put(controller.updateCart);
 router.route("/remove-from-cart/:userId/:itemId").delete(controller.removeCartItem);
 router.route("/order/:userId").post(controller.orderCart);
-router.route("user/:userId/addresses").post(controller.addAddress);
+router.route("/user/:userId/addresses").get(controller.getAddresses);
+router.route("/user/:userId/address").post(controller.addNewAddress);
+router.route("/user/:userId/address/:addressId").put(controller.editAddress);
+router.route("/user/:userId/address/:addressId").delete(controller.deleteAddress);
 router.route("/payment-success/:userId").post(controller.paymentSuccess);
 
 router.route("/add-to-wishlist").post(controller.addWishlist);
