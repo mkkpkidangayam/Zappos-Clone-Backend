@@ -59,27 +59,34 @@ const CustomerSchema = new mongoose.Schema(
         quantity: { type: Number },
       },
     ],
-    order: Array,
-    address: [
+    order: [
       {
-        street: {
-          type: String,
+        orderTime: {
+          type: Date,
+          default: Date.now,
         },
-        city: {
-          type: String,
-        },
-        state: {
-          type: String,
-        },
-        zipCode: {
-          type: String,
-        },
-        phoneNumber: {
-          type: String,
-        },
-        label: String,
       },
     ],
+    address: [AddressSchema],
+      // {
+      //   street: {
+      //     type: String,
+      //   },
+      //   city: {
+      //     type: String,
+      //   },
+      //   state: {
+      //     type: String,
+      //   },
+      //   zipCode: {
+      //     type: String,
+      //   },
+      //   phoneNumber: {
+      //     type: String,
+      //   },
+      //   label: String,
+      // },
+    // ],
   },
   { timestamps: true }
 );

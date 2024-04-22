@@ -357,8 +357,9 @@ const deleteAddress = tryCatchHandler(async (req, res) => {
 });
 
 // payment-----------------
-const orderCart = tryCatchHandler(async (req, res) => {
+const goToPayment = tryCatchHandler(async (req, res) => {
   const { userId } = req.params;
+  const { addressId } = req.body;
 
   const user = await CustomerModel.findById(userId);
 
@@ -378,10 +379,8 @@ const orderCart = tryCatchHandler(async (req, res) => {
           name: product.title,
         },
         unit_amount: Math.round(product.price * 100),
-        // Size: cartItem.size,
       },
       quantity: cartItem.quantity,
-      
     });
   }
   // Create Stripe session
@@ -391,7 +390,6 @@ const orderCart = tryCatchHandler(async (req, res) => {
     line_items: line_items,
     success_url: `http://localhost:3000/payment-success/user/${userId}`,
     cancel_url: `http://localhost:3000//payment-failure/user/${userId}`,
-    
   });
   const sessionId = session.id;
   const sessionUrl = session.url;
@@ -400,7 +398,7 @@ const orderCart = tryCatchHandler(async (req, res) => {
 });
 
 //after payment-------------------------
-const paymentSuccess = tryCatchHandler(async (req, res) => {
+const createOrder = tryCatchHandler(async (req, res) => {
   const { userId } = req.params;
 
   const user = await CustomerModel.findById(userId);
@@ -409,9 +407,15 @@ const paymentSuccess = tryCatchHandler(async (req, res) => {
   }
 
   if (user.cart && user.cart.length > 0) {
-    user.order.push(...user.cart);
+    const newOrder = {
+      items: user.cart,
+      orderTime: new Date(),
+    };
+
+    user.order.push(newOrder);
     user.cart = [];
     await user.save();
+    res.status(200).send("Order created successfully");
   } else {
     res.status(400).send("Cart is empty or not found");
   }
@@ -428,10 +432,10 @@ module.exports = {
   addWishlist,
   displayWishlist,
   removeFromWislist,
-  orderCart,
-  paymentSuccess,
+  createOrder,
   addNewAddress,
   editAddress,
   getAddresses,
   deleteAddress,
+  goToPayment,
 };
