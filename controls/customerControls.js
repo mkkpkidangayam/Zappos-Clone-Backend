@@ -297,16 +297,15 @@ const removeFromWislist = tryCatchHandler(async (req, res) => {
 });
 
 //Add shipping address------------------
-const addAddress = tryCatchHandler(async(req, res) => {
-  const {userId} = req.params
-  const newAddress = req.body
+const addAddress = tryCatchHandler(async (req, res) => {
+  const { userId } = req.params;
+  const newAddress = req.body;
 
   const user = await CustomerModel.findById(userId);
-    user.address.push(newAddress);
-    await user.save();
-    res.status(201).send("Address added successfully");
-})
-
+  user.address.push(newAddress);
+  await user.save();
+  res.status(201).send("Address added successfully");
+});
 
 // payment-----------------
 const orderCart = tryCatchHandler(async (req, res) => {
@@ -357,9 +356,8 @@ const paymentSuccess = tryCatchHandler(async (req, res) => {
     return res.status(404).send("User not found");
   }
 
-
   if (user.cart && user.cart.length > 0) {
-    user.order.push(...user.cart)
+    user.order.push(...user.cart);
     user.cart = [];
     await user.save();
   } else {
@@ -380,5 +378,5 @@ module.exports = {
   removeFromWislist,
   orderCart,
   paymentSuccess,
-  addAddress
+  addAddress,
 };
