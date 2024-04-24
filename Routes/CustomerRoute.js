@@ -19,6 +19,7 @@ router.route("/user/:userId/address/:addressId").delete(controller.deleteAddress
 
 router.route("/checkout/:userId").post(controller.goToPayment);
 router.route("/create-order/:userId").post(controller.createOrder);
+router.route("/user/:userId/orders").get(controller.getOrderDetails);
 
 router.route("/add-to-wishlist").post(controller.addWishlist);
 router.route("/wishlist/:id").get(controller.displayWishlist);
