@@ -20,7 +20,6 @@ const stripeID = require("stripe")(stripe);
 // Send OTP to customer email ---------------
 const otpSendByEmail = tryCatchHandler(async (req, res) => {
   const { email } = req.body;
-  // Check if user already exists
   const checkuser = await CustomerModel.findOne({ email: email });
 
   if (checkuser) {
