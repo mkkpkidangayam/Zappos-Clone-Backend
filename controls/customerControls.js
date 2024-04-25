@@ -140,6 +140,16 @@ const customerLogin = tryCatchHandler(async (req, res) => {
   });
 });
 
+//fetch User data to profile
+const userProfile = tryCatchHandler(async (req, res) => {
+  const { userId } = req.params;
+  const userData = await CustomerModel.findById(userId);
+  if (!userData) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  return res.status(200).json(userData);
+});
+
 //Products adding to cart-------------------
 const addToCart = tryCatchHandler(async (req, res) => {
   const { userId, productId, size, quantity } = req.body;
@@ -419,7 +429,9 @@ const createOrder = tryCatchHandler(async (req, res) => {
       return res.status(404).send("User not found");
     }
 
-    const shippingAddress = user.address.find((addr) => addr._id.toString() === selectedAddressId);
+    const shippingAddress = user.address.find(
+      (addr) => addr._id.toString() === selectedAddressId
+    );
     if (!shippingAddress) {
       await session.abortTransaction();
       session.endSession();
@@ -432,30 +444,44 @@ const createOrder = tryCatchHandler(async (req, res) => {
       return res.status(400).send("Cart is empty");
     }
 
-    const productIds = user.cart.map(item => item.product);
-    const products = await ProductModel.find({_id: { $in: productIds }}).session(session);
+    const productIds = user.cart.map((item) => item.product);
+    const products = await ProductModel.find({
+      _id: { $in: productIds },
+    }).session(session);
 
     const newOrder = [];
 
     for (const cartItem of user.cart) {
-      const product = products.find(p => p._id.toString() === cartItem.product.toString());
+      const product = products.find(
+        (p) => p._id.toString() === cartItem.product.toString()
+      );
       if (!product) {
         await session.abortTransaction();
         session.endSession();
         return res.status(404).send(`Product not found: ${cartItem.product}`);
       }
 
-      const sizeIndex = product.sizes.findIndex((size) => size.size === cartItem.size);
+      const sizeIndex = product.sizes.findIndex(
+        (size) => size.size === cartItem.size
+      );
       if (sizeIndex === -1) {
         await session.abortTransaction();
         session.endSession();
-        return res.status(400).send(`Size ${cartItem.size} not found for product: ${product.title}`);
+        return res
+          .status(400)
+          .send(
+            `Size ${cartItem.size} not found for product: ${product.title}`
+          );
       }
 
       if (product.sizes[sizeIndex].quantity < cartItem.quantity) {
         await session.abortTransaction();
         session.endSession();
-        return res.status(400).send(`Insufficient quantity for size ${cartItem.size} of product: ${product.title}`);
+        return res
+          .status(400)
+          .send(
+            `Insufficient quantity for size ${cartItem.size} of product: ${product.title}`
+          );
       }
 
       product.sizes[sizeIndex].quantity -= cartItem.quantity;
@@ -466,7 +492,7 @@ const createOrder = tryCatchHandler(async (req, res) => {
         size: cartItem.size,
         quantity: cartItem.quantity,
         address: shippingAddress,
-        orderTime: new Date(), 
+        orderTime: new Date(),
       });
     }
 
@@ -545,13 +571,13 @@ const createOrder = tryCatchHandler(async (req, res) => {
 //         item: cartItem.product,
 //         size: cartItem.size,
 //         quantity: cartItem.quantity,
-//         orderTime: new Date(), 
+//         orderTime: new Date(),
 //       });
 //     }
 
 //     const calculateTotalPrice = async (cartItems) => {
 //       let totalPrice = 0;
-    
+
 //       for (const cartItem of cartItems) {
 //         try {
 //           const product = await ProductModel.findById(cartItem.product);
@@ -565,7 +591,7 @@ const createOrder = tryCatchHandler(async (req, res) => {
 //           console.error(`Error fetching product: ${error}`);
 //         }
 //       }
-    
+
 //       return totalPrice;
 //     };
 
@@ -593,25 +619,23 @@ const createOrder = tryCatchHandler(async (req, res) => {
 //   }
 // });
 
-
-
 //Fetching order details--------------------------
-const getOrderDetails = tryCatchHandler(async(req, res)=> {
-  const {userId} = req.params;
-  const user = await CustomerModel.findById(userId).populate("order.product")
+const getOrderDetails = tryCatchHandler(async (req, res) => {
+  const { userId } = req.params;
+  const user = await CustomerModel.findById(userId).populate("order.product");
   if (!user) {
-    return res.status(404).json({message: "User not found"})
+    return res.status(404).json({ message: "User not found" });
   }
 
   const orderDetails = user.order;
-  return res.status(200).json(orderDetails)
-})
-
+  return res.status(200).json(orderDetails);
+});
 
 module.exports = {
   otpSendByEmail,
   registerUser,
   customerLogin,
+  userProfile,
   addToCart,
   getCart,
   updateCart,
@@ -625,5 +649,5 @@ module.exports = {
   deleteAddress,
   goToPayment,
   createOrder,
-  getOrderDetails
+  getOrderDetails,
 };

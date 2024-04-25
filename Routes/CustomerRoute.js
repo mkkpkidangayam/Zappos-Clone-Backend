@@ -6,6 +6,7 @@ const authentication = require("../Middleware/authentication");
 router.route("/register").post(controller.registerUser);
 router.route("/otpsend").post(controller.otpSendByEmail);
 router.route("/login").post(controller.customerLogin);
+router.route("/user/profile/:userId").get(controller.userProfile);
 
 router.route("/add-to-cart").post(controller.addToCart);
 router.route("/get-cart/:id").get(controller.getCart);
