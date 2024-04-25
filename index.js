@@ -12,6 +12,8 @@ dotenv.config({ path: "./Config/.env" });
 
 databaseConnect();
 
+console.log(process.env.ADMIN_USERNAME);
+
 app.use(express.json());
 app.use(cookieParser());
 

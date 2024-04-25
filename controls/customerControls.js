@@ -1,4 +1,5 @@
 const tryCatchHandler = require("../Middleware/trycatchHandler");
+require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const config = require("../Config/config");
@@ -7,10 +8,14 @@ const CustomerModel = require("../Models/customerModel");
 const ProductModel = require("../Models/productModal");
 const { default: mongoose } = require("mongoose");
 const OrderModel = require("../Models/orderModal");
+console.log(process.env.ADMIN_USERNAME);
 // const stripe = process.env.stripe_secret_key
 const stripe =
   "sk_test_51P7bVeSBKHzUp8h626uJkC2PrHYJ44zWC8mx2ND4x0Zd7KSX5RU37bMKwTvhPeln6a9jW2OSGfVj3n8LQKvQZJCX00Ds1EIQJ6";
 const stripeID = require("stripe")(stripe);
+
+
+
 
 // Send OTP to customer email ---------------
 const otpSendByEmail = tryCatchHandler(async (req, res) => {
@@ -40,6 +45,8 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
     service: "gmail",
     auth: { user: config.email.user, pass: config.email.pass },
   });
+  console.log("config.email.user",config.email.user);
+  console.log("email", email);
 
   const mailOptions = {
     from: config.email.user,
@@ -371,7 +378,6 @@ const deleteAddress = tryCatchHandler(async (req, res) => {
 // payment-----------------
 const goToPayment = tryCatchHandler(async (req, res) => {
   const { userId } = req.params;
-  const { addressId } = req.body;
 
   const user = await CustomerModel.findById(userId);
   if (!user) {
