@@ -1,5 +1,4 @@
 const tryCatchHandler = require("../Middleware/trycatchHandler");
-require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const config = require("../Config/config");
@@ -8,11 +7,7 @@ const CustomerModel = require("../Models/customerModel");
 const ProductModel = require("../Models/productModal");
 const { default: mongoose } = require("mongoose");
 const OrderModel = require("../Models/orderModal");
-console.log(process.env.ADMIN_USERNAME);
-// const stripe = process.env.stripe_secret_key
-const stripe =
-  "sk_test_51P7bVeSBKHzUp8h626uJkC2PrHYJ44zWC8mx2ND4x0Zd7KSX5RU37bMKwTvhPeln6a9jW2OSGfVj3n8LQKvQZJCX00Ds1EIQJ6";
-const stripeID = require("stripe")(stripe);
+const stripeID = require("stripe")(process.env.stripe_secret_key);
 
 
 
@@ -129,6 +124,8 @@ const customerLogin = tryCatchHandler(async (req, res) => {
       .status(400)
       .json({ success: false, message: "The password is incorrect" });
   }
+
+  
 
   // Generate JWT
   const token = jwt.sign(
