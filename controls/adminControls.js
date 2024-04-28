@@ -18,25 +18,17 @@ const adminLogin = tryCatchHandler(async (req, res) => {
   if (!validation) {
     return res.status(400).json({
       success: false,
-      message: "validation failed: incorrect username or password"
-    })
-    
+      message: "validation failed: incorrect username or password",
+    });
   }
 
-  const adminToken = jwt.sign({ username: username }, process.env.JWT_SECRET, {
-  });
-  console.log("AdminToken:- ",adminToken);
+  const adminToken = jwt.sign(
+    { username: username },
+    process.env.JWT_SECRET,
+    {}
+  );
 
   res.cookie("adminToken", adminToken);
-  // res.cookie("otp", hashedOTP, { httpOnly: true, secure: true });
-
-  // const token = await req.cookies.adminToken;
-  // if (!token) {
-  //   return res.status(400).json({
-  //     success: false,
-  //     message: "cookie issue",
-  //   });
-  // }
 
   res.status(200).json({
     success: true,
@@ -64,17 +56,8 @@ const viewCustomers = tryCatchHandler(async (req, res) => {
 
 // Add product
 const addProduct = tryCatchHandler(async (req, res) => {
-  const {
-    title,
-    info,
-    price,
-    brand,
-    images,
-    gender,
-    category,
-    sizes,
-    color,
-  } = req.body;
+  const { title, info, price, brand, images, gender, category, sizes, color } =
+    req.body;
   const existingProduct = await ProductModal.findOne({ title: title });
 
   if (existingProduct) {
@@ -100,7 +83,7 @@ const addProduct = tryCatchHandler(async (req, res) => {
     gender,
     category,
     sizes,
-    color,  
+    color,
   });
 
   await newProduct.save();
