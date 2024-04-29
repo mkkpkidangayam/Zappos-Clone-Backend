@@ -125,8 +125,6 @@ const customerLogin = tryCatchHandler(async (req, res) => {
       .json({ success: false, message: "The password is incorrect" });
   }
 
-  
-
   // Generate JWT
   const token = jwt.sign(
     {
