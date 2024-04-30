@@ -134,7 +134,9 @@ const customerLogin = tryCatchHandler(async (req, res) => {
     process.env.JWT_SECRET
   );
 
-  res.status(200).json({
+  // req.cookies = token
+
+  res.status(200).cookie("token", token).json({
     token: token,
     message: "Sign-in successful. Start shopping...",
     userData: user,

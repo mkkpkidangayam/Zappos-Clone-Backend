@@ -21,7 +21,7 @@ app.use(
     credentials: true,
   })
 );
-
+ 
 app.use("/api", customerRoute);
 
 app.use("/api", adminRoute);
