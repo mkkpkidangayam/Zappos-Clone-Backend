@@ -8,23 +8,23 @@ router.route("/otpsend").post(controller.otpSendByEmail);
 router.route("/login").post(controller.customerLogin);
 router.route("/user/profile/:userId").get(authentication, controller.userProfile);
 
-router.route("/add-to-cart").post(controller.addToCart);
-router.route("/get-cart/:id").get(controller.getCart);
-router.route("/update-cart/:userId").put(controller.updateCart);
-router.route("/remove-from-cart/:userId/:itemId").delete(controller.removeCartItem);
+router.route("/add-to-cart").post(authentication, controller.addToCart);
+router.route("/get-cart/:id").get(authentication, controller.getCart);
+router.route("/update-cart/:userId").put(authentication, controller.updateCart);
+router.route("/remove-from-cart/:userId/:itemId").delete(authentication, controller.removeCartItem);
 
-router.route("/user/:userId/addresses").get(controller.getAddresses);
-router.route("/user/:userId/address").post(controller.addNewAddress);
-router.route("/user/:userId/address/:addressId").put(controller.editAddress);
-router.route("/user/:userId/address/:addressId").delete(controller.deleteAddress);
+router.route("/user/:userId/addresses").get(authentication, controller.getAddresses);
+router.route("/user/:userId/address").post(authentication, controller.addNewAddress);
+router.route("/user/:userId/address/:addressId").put(authentication, controller.editAddress);
+router.route("/user/:userId/address/:addressId").delete(authentication, controller.deleteAddress);
 
-router.route("/checkout/:userId").post(controller.goToPayment);
-router.route("/create-order/:userId").post(controller.createOrder);
-router.route("/user/:userId/orders").get(controller.getOrderDetails);
+router.route("/checkout/:userId").post(authentication, controller.goToPayment);
+router.route("/create-order/:userId").post(authentication, controller.createOrder);
+router.route("/user/:userId/orders").get(authentication, controller.getOrderDetails);
 
-router.route("/add-to-wishlist").post(controller.addWishlist);
-router.route("/wishlist/:id").get(controller.displayWishlist);
-router.route("/remove-from-wishlist/:userId/:productId").delete(controller.removeFromWislist);
+router.route("/add-to-wishlist").post(authentication, controller.addWishlist);
+router.route("/wishlist/:id").get(authentication, controller.displayWishlist);
+router.route("/remove-from-wishlist/:userId/:productId").delete(authentication, controller.removeFromWislist);
 
 
 module.exports = router;

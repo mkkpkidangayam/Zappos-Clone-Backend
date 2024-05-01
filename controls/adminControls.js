@@ -24,13 +24,13 @@ const adminLogin = tryCatchHandler(async (req, res) => {
 
   const adminToken = jwt.sign(
     { username: username },
-    process.env.JWT_SECRET,
+    process.env.ADMIN_JWT_SECRET,
     {}
   );
-
+ 
   res.cookie("adminToken", adminToken);
 
-  res.status(200).json({
+  res.status(200).cookie("adminToken", adminToken).json({
     success: true,
     message: "Login success, Welcome admin",
     adminToken: adminToken,
