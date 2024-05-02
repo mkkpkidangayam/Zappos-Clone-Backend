@@ -27,7 +27,7 @@ const adminLogin = tryCatchHandler(async (req, res) => {
     process.env.ADMIN_JWT_SECRET,
     {}
   );
- 
+
   res.cookie("adminToken", adminToken);
 
   res.status(200).cookie("adminToken", adminToken).json({
@@ -38,13 +38,13 @@ const adminLogin = tryCatchHandler(async (req, res) => {
   console.log("Admin login success");
 });
 
-// View all users
-const viewCustomers = tryCatchHandler(async (req, res) => {
-  const customers = await CustomerModel.find();
-  if (customers) {
+// View all users--------------------------
+const listingUsers = tryCatchHandler(async (req, res) => {
+  const users = await CustomerModel.find();
+  if (users) {
     res.status(200).json({
       success: true,
-      customer: customers,
+      users: users,
     });
   } else {
     res.status(404).json({
@@ -54,7 +54,15 @@ const viewCustomers = tryCatchHandler(async (req, res) => {
   }
 });
 
-// Add product
+// Delete user account-----------------------------
+const deleteUserAccount = tryCatchHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  await CustomerModel.findByIdAndDelete(userId);
+  res.status(200).send("User deleted");
+});
+
+// Add product---------------
 const addProduct = tryCatchHandler(async (req, res) => {
   const { title, info, price, brand, images, gender, category, sizes, color } =
     req.body;
@@ -95,4 +103,4 @@ const addProduct = tryCatchHandler(async (req, res) => {
   });
 });
 
-module.exports = { adminLogin, viewCustomers, addProduct };
+module.exports = { adminLogin, listingUsers, deleteUserAccount, addProduct };

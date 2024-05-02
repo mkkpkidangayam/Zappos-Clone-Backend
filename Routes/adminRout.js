@@ -7,11 +7,12 @@ const createProduct = require('../controls/productAdding')
 
 router.route("/admin/login").post(adminControl.adminLogin);
 
-router.route("/admin/users").get(adminAuth, adminControl.viewCustomers);
+router.route("/admin/users-mangae").get( adminControl.listingUsers);
+router.route("/admin/users/delete/:userId").delete(adminAuth, adminControl.deleteUserAccount);
 
 // router.post("/admin/addproduct", adminAuth, upload.array("images", 6), adminControl.addProduct);
-router.post("/admin/addproduct", adminControl.addProduct);
+router.post("/admin/addproduct",adminAuth, adminControl.addProduct);
 // router.post("/admin/addproduct", createProduct);
 
 
-module.exports = router
+module.exports = router             
