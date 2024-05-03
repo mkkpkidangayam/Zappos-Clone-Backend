@@ -5,10 +5,12 @@ const adminControl = require("../controls/adminControls");
 const upload = require("../Upload/multer");
 const createProduct = require('../controls/productAdding')
 
-router.route("/admin/login").post(adminControl.adminLogin);
+router.post("/admin/login",adminControl.adminLogin);
 
-router.route("/admin/users-mangae").get( adminControl.listingUsers);
-router.route("/admin/users/delete/:userId").delete(adminAuth, adminControl.deleteUserAccount);
+router.get("/admin/users-manage",adminAuth, adminControl.listingUsers);
+router.delete("/admin/user/delete/:userId", adminAuth, adminControl.deleteUserAccount);
+router.patch("/user/block/:userId", adminAuth, adminControl.blockUser)
+router.patch("/user/unblock/:userId", adminAuth, adminControl.unblockUser)
 
 // router.post("/admin/addproduct", adminAuth, upload.array("images", 6), adminControl.addProduct);
 router.post("/admin/addproduct",adminAuth, adminControl.addProduct);

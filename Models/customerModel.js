@@ -79,25 +79,10 @@ const CustomerSchema = new mongoose.Schema(
       },
     ],
     address: [AddressSchema],
-    // {
-    //   street: {
-    //     type: String,
-    //   },
-    //   city: {
-    //     type: String,
-    //   },
-    //   state: {
-    //     type: String,
-    //   },
-    //   zipCode: {
-    //     type: String,
-    //   },
-    //   phoneNumber: {
-    //     type: String,
-    //   },
-    //   label: String,
-    // },
-    // ],
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

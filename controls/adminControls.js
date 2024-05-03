@@ -62,6 +62,26 @@ const deleteUserAccount = tryCatchHandler(async (req, res) => {
   res.status(200).send("User deleted");
 });
 
+// Block user----------------
+const blockUser = tryCatchHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  const user = await CustomerModel.findByIdAndUpdate(userId, {
+    isBlocked: true,
+  });
+  res.json(user);
+});
+
+// Unblock user
+const unblockUser = tryCatchHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  const user = await CustomerModel.findByIdAndUpdate(userId, {
+    isBlocked: false,
+  });
+  res.json(user);
+});
+
 // Add product---------------
 const addProduct = tryCatchHandler(async (req, res) => {
   const { title, info, price, brand, images, gender, category, sizes, color } =
@@ -103,4 +123,11 @@ const addProduct = tryCatchHandler(async (req, res) => {
   });
 });
 
-module.exports = { adminLogin, listingUsers, deleteUserAccount, addProduct };
+module.exports = {
+  adminLogin,
+  listingUsers,
+  deleteUserAccount,
+  addProduct,
+  blockUser,
+  unblockUser,
+};
