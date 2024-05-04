@@ -21,12 +21,7 @@ const adminLogin = tryCatchHandler(async (req, res) => {
       message: "validation failed: incorrect username or password",
     });
   }
-
-  const adminToken = jwt.sign(
-    { username: username },
-    process.env.ADMIN_JWT_SECRET,
-    {}
-  );
+  const adminToken = jwt.sign({ username: username }, process.env.ADMIN_JWT_SECRET);
 
   res.cookie("adminToken", adminToken);
 
