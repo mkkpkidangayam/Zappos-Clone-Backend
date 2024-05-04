@@ -21,7 +21,10 @@ const adminLogin = tryCatchHandler(async (req, res) => {
       message: "validation failed: incorrect username or password",
     });
   }
-  const adminToken = jwt.sign({ username: username }, process.env.ADMIN_JWT_SECRET);
+  const adminToken = jwt.sign(
+    { username: username },
+    process.env.ADMIN_JWT_SECRET
+  );
 
   res.cookie("adminToken", adminToken);
 
@@ -34,20 +37,59 @@ const adminLogin = tryCatchHandler(async (req, res) => {
 });
 
 // View all users--------------------------
-const listingUsers = tryCatchHandler(async (req, res) => {
-  const users = await CustomerModel.find();
-  if (users) {
-    res.status(200).json({
-      success: true,
-      users: users,
-    });
-  } else {
-    res.status(404).json({
-      success: false,
-      message: "User not found",
-    });
+// adminControl.js
+
+const usersList = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+
+  const users = await CustomerModel.find().skip(startIndex).limit(limit);
+  const totalUsers = await CustomerModel.countDocuments();
+
+  const pagination = {
+    totalPages: Math.ceil(totalUsers / limit),
+    currentPage: page,
+  };
+
+  if (endIndex < totalUsers) {
+    pagination.nextPage = page + 1;
   }
-});
+
+  if (startIndex > 0) {
+    pagination.previousPage = page - 1;
+  }
+
+  res.status(200).json({
+    success: true,
+    users: users,
+    pagination: pagination,
+  });
+};
+
+// const usersList = tryCatchHandler(async (req, res) => {
+//   const page = parseInt(req.query.page) || 1
+//   const limit = parseInt(req.query.limit) || 10
+
+//   const startIndex = (page - 1) * limit;
+//   const endIndex = page * limit;
+
+//   const users = await CustomerModel.find().skip(startIndex).limit(endIndex);
+
+//   if (users) {
+//     res.status(200).json({
+//       success: true,
+//       users: users,
+//     });
+//   } else {
+//     res.status(404).json({
+//       success: false,
+//       message: "User not found",
+//     });
+//   }
+// });
 
 // Delete user account-----------------------------
 const deleteUserAccount = tryCatchHandler(async (req, res) => {
@@ -118,11 +160,36 @@ const addProduct = tryCatchHandler(async (req, res) => {
   });
 });
 
+//product listing----------------------------------
+const productList = tryCatchHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  const startIndex = (page - 1) * limit;
+
+  const products = await ProductModal.find().skip(startIndex).limit(limit);
+
+  const totalProducts = await ProductModal.countDocuments();
+
+  const totalPages = Math.ceil(totalProducts / limit);
+
+  const pagination = {
+    currentPage: page,
+    totalPages: totalPages,
+  };
+
+  res.status(200).json({
+     products,
+    pagination: pagination,
+  });
+});
+
 module.exports = {
   adminLogin,
-  listingUsers,
-  deleteUserAccount,
-  addProduct,
+  usersList,
   blockUser,
   unblockUser,
+  deleteUserAccount,
+  addProduct,
+  productList
 };

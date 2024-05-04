@@ -117,6 +117,12 @@ const customerLogin = tryCatchHandler(async (req, res) => {
       .json({ success: false, message: "Invalid email address" });
   }
 
+  if (user.isBlocked) {
+    return res
+      .status(403) // 403 Forbidden status code is more appropriate here
+      .json({ success: false, message: "Account is blocked. Please contact support." });
+  }
+
   const passwordMatch = await bcrypt.compare(password, user.password);
 
   if (!passwordMatch) {
