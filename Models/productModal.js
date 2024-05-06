@@ -94,13 +94,17 @@ const productSchema = new mongoose.Schema(
         },
       },
     ],
+    isHide: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-productSchema.index({ title: 'text' });
+productSchema.index({ title: "text" });
 
 const ProductModel = mongoose.model("Product", productSchema);
 

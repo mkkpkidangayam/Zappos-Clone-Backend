@@ -184,6 +184,23 @@ const productList = tryCatchHandler(async (req, res) => {
   });
 });
 
+
+//Product Detils-----------------
+const getProductsById = tryCatchHandler(async (req, res) => {
+  const _id = req.params.id;
+
+  const productById = await ProductModel.findById(_id);
+
+  if (!productById) {
+    res.status(401).json({
+      success: false,
+      message: "Products not found",
+    });
+  } else {
+    res.status(201).json(productById);
+  }
+});
+
 module.exports = {
   adminLogin,
   usersList,
@@ -191,5 +208,7 @@ module.exports = {
   unblockUser,
   deleteUserAccount,
   addProduct,
-  productList
+  productList,
+  getProductsById,
+
 };

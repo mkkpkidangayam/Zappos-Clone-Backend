@@ -3,16 +3,17 @@ const ProductModel = require("../Models/productModal");
 
 //show products-----------------
 const getProducts = tryCatchHandler(async (req, res) => {
+  // const products = await ProductModel.find({ isHide: false });
   const products = await ProductModel.find();
 
-  if (!products) {
-    res.status(401).json({
+  if (!products || products.length === 0) {
+    return res.status(401).json({
       success: false,
       message: "Products not found",
     });
-  } else {
-    res.status(201).json(products);
   }
+
+  res.status(201).json(products);
 });
 
 //show products by id-----------------
@@ -34,13 +35,12 @@ const getProductsById = tryCatchHandler(async (req, res) => {
 //show products by category-----------------
 const subCategories = tryCatchHandler(async (req, res) => {
   // Assuming 'gender' and 'category' are part of the document structure
-  const categories = await ProductModel.find({ 'gender': 'men' })
-    .select('category.sub')
-    .distinct('category.sub');  // Use distinct if you only want unique subcategory names
+  const categories = await ProductModel.find({ gender: "men" })
+    .select("category.sub")
+    .distinct("category.sub"); // Use distinct if you only want unique subcategory names
 
   res.json(categories);
 });
-
 
 // const productsByCategory = tryCatchHandler(async (req, res) => {
 //   const category = req.params.category;
