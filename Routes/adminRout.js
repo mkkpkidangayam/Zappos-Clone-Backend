@@ -15,6 +15,8 @@ router.patch("/user/unblock/:userId", adminAuth, adminControl.unblockUser)
 // router.post("/admin/addproduct", adminAuth, upload.array("images", 6), adminControl.addProduct);
 router.post("/admin/addproduct", adminAuth, adminControl.addProduct);
 router.get("/admin/products-list",adminAuth, adminControl.productList);
+router.get("/admin/product/:id",adminAuth, adminControl.getProductsById);
+
 // router.post("/admin/addproduct", createProduct);
 
 

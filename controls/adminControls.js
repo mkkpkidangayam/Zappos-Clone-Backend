@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const CustomerModel = require("../Models/customerModel");
 const ProductModal = require("../Models/productModal");
 const cloudinary = require("../Upload/cloudinary");
+const ProductModel = require("../Models/productModal");
 
 // Admin Login ---------------
 const adminLogin = tryCatchHandler(async (req, res) => {
