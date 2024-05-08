@@ -180,11 +180,10 @@ const productList = tryCatchHandler(async (req, res) => {
   };
 
   res.status(200).json({
-     products,
+    products,
     pagination: pagination,
   });
 });
-
 
 //Product Detils-----------------
 const getProductsById = tryCatchHandler(async (req, res) => {
@@ -202,6 +201,23 @@ const getProductsById = tryCatchHandler(async (req, res) => {
   }
 });
 
+const editproduct = tryCatchHandler(async (req, res) => {
+  const { id } = req.params;
+  const { title, price, brand, images, sizes, info } = req.body;
+
+  const product = await ProductModal.findByIdAndUpdate(
+    id,
+    { title, price, brand, images, sizes, info },
+    { new: true }
+  );
+
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
+  }
+
+  res.json(product);
+});
+
 module.exports = {
   adminLogin,
   usersList,
@@ -211,5 +227,5 @@ module.exports = {
   addProduct,
   productList,
   getProductsById,
-
+  editproduct
 };

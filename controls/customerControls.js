@@ -39,8 +39,7 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
     service: "gmail",
     auth: { user: config.email.user, pass: config.email.pass },
   });
-  console.log("config.email.user",config.email.user);
-  console.log("email", email);
+
 
   const mailOptions = {
     from: config.email.user,
