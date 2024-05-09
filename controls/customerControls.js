@@ -9,9 +9,6 @@ const { default: mongoose } = require("mongoose");
 const OrderModel = require("../Models/orderModal");
 const stripeID = require("stripe")(process.env.stripe_secret_key);
 
-
-
-
 // Send OTP to customer email ---------------
 const otpSendByEmail = tryCatchHandler(async (req, res) => {
   const { email } = req.body;
@@ -39,7 +36,6 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
     service: "gmail",
     auth: { user: config.email.user, pass: config.email.pass },
   });
-
 
   const mailOptions = {
     from: config.email.user,
@@ -117,9 +113,10 @@ const customerLogin = tryCatchHandler(async (req, res) => {
   }
 
   if (user.isBlocked) {
-    return res
-      .status(403) // 403 Forbidden status code is more appropriate here
-      .json({ success: false, message: "Account is blocked. Please contact support." });
+    return res.status(403).json({
+      success: false,
+      message: "Account is blocked. Please contact support.",
+    });
   }
 
   const passwordMatch = await bcrypt.compare(password, user.password);
@@ -148,7 +145,7 @@ const customerLogin = tryCatchHandler(async (req, res) => {
   });
 });
 
-//fetch User data to profile
+//Fetch User data to profile----------------------------
 const userProfile = tryCatchHandler(async (req, res) => {
   const { userId } = req.params;
   const userData = await CustomerModel.findById(userId);
