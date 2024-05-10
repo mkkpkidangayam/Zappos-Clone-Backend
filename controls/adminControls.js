@@ -162,15 +162,51 @@ const addProduct = tryCatchHandler(async (req, res) => {
 });
 
 //product listing----------------------------------
+// const productList = tryCatchHandler(async (req, res) => {
+//   const page = parseInt(req.query.page) || 1;
+//   const limit = parseInt(req.query.limit) || 10;
+
+//   const startIndex = (page - 1) * limit;
+
+//   const products = await ProductModal.find().skip(startIndex).limit(limit);
+
+//   const totalProducts = await ProductModal.countDocuments();
+
+//   const totalPages = Math.ceil(totalProducts / limit);
+
+//   const pagination = {
+//     currentPage: page,
+//     totalPages: totalPages,
+//   };
+
+//   res.status(200).json({
+//     products,
+//     pagination: pagination,
+//   });
+// });
 const productList = tryCatchHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
+  const gender = req.query.gender || "all";
+  const category = req.query.category || "";
+
+  let query = {};
+
+  if (gender !== "all") {
+    query.gender = gender;
+  }
+
+  if (category !== "") {
+    query["category.main"] = category;
+  }
 
   const startIndex = (page - 1) * limit;
 
-  const products = await ProductModal.find().skip(startIndex).limit(limit);
+  const products = await ProductModal.find(query)
+    .skip(startIndex)
+    .limit(limit);
 
-  const totalProducts = await ProductModal.countDocuments();
+  const totalProducts = await ProductModal.countDocuments(query);
 
   const totalPages = Math.ceil(totalProducts / limit);
 
@@ -184,6 +220,9 @@ const productList = tryCatchHandler(async (req, res) => {
     pagination: pagination,
   });
 });
+
+
+
 
 //Product Detils-----------------
 const getProductsById = tryCatchHandler(async (req, res) => {
