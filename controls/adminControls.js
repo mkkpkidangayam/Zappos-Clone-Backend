@@ -202,9 +202,7 @@ const productList = tryCatchHandler(async (req, res) => {
 
   const startIndex = (page - 1) * limit;
 
-  const products = await ProductModal.find(query)
-    .skip(startIndex)
-    .limit(limit);
+  const products = await ProductModal.find(query).skip(startIndex).limit(limit);
 
   const totalProducts = await ProductModal.countDocuments(query);
 
@@ -220,9 +218,6 @@ const productList = tryCatchHandler(async (req, res) => {
     pagination: pagination,
   });
 });
-
-
-
 
 //Product Detils-----------------
 const getProductsById = tryCatchHandler(async (req, res) => {
@@ -266,5 +261,5 @@ module.exports = {
   addProduct,
   productList,
   getProductsById,
-  editproduct
+  editproduct,
 };
