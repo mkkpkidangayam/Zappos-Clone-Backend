@@ -80,7 +80,7 @@ const CustomerSchema = new mongoose.Schema(
     ],
     address: [AddressSchema],
     isBlocked: {
-      type: Boolean,
+      type: Boolean,  
       default: false,
     },
   },  

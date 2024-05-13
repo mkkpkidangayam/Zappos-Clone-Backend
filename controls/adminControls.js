@@ -4,6 +4,7 @@ const CustomerModel = require("../Models/customerModel");
 const ProductModal = require("../Models/productModal");
 const cloudinary = require("../Upload/cloudinary");
 const ProductModel = require("../Models/productModal");
+const TopBarModel = require("../Models/TopbarModel");
 
 // Admin Login ---------------
 const adminLogin = tryCatchHandler(async (req, res) => {
@@ -252,6 +253,22 @@ const editproduct = tryCatchHandler(async (req, res) => {
   res.json(product);
 });
 
+const topbarTextCreating = tryCatchHandler(async (req, res) => {
+  const { text } = req.body;
+
+  if (!text) {
+    return res.status(404).json({ message: "Content not found" });
+  }
+
+  const newContent = new TopBarModel({ text });
+
+  await newContent.save();
+
+  res.status(201).json({
+    message: "Content added successfully",
+  });
+});
+
 module.exports = {
   adminLogin,
   usersList,
@@ -262,4 +279,5 @@ module.exports = {
   productList,
   getProductsById,
   editproduct,
+  topbarTextCreating,
 };
