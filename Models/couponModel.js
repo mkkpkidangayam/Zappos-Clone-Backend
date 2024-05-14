@@ -1,11 +1,28 @@
 const mongoose = require("mongoose");
 
-const couponSchema = new mongoose.Schema({
-  text: {
-    type: String,
-    trim: true,
+const couponSchema = new mongoose.Schema(
+  {
+    code: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    discount: {
+      type: Number,
+      required: true,
+      min: 0,
+      max: 100,
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
   },
-});
+  {
+    timestamps: true,
+  }
+);
 
-const couponModel = mongoose.model("coupon", couponSchema);
-module.exports = couponModel;
+const CouponModel = mongoose.model("coupon", couponSchema);
+
+module.exports = CouponModel;

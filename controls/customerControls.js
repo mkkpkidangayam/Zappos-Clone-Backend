@@ -7,6 +7,7 @@ const CustomerModel = require("../Models/customerModel");
 const ProductModel = require("../Models/productModal");
 const { default: mongoose } = require("mongoose");
 const OrderModel = require("../Models/orderModal");
+const CouponModel = require("../Models/couponModel");
 const stripeID = require("stripe")(process.env.stripe_secret_key);
 
 // Send OTP to customer email ---------------
@@ -635,6 +636,20 @@ const getOrderDetails = tryCatchHandler(async (req, res) => {
   return res.status(200).json(orderDetails);
 });
 
+const applyCoupon = tryCatchHandler(async (req, res) => {
+  const { couponCode } = req.body;
+
+  const coupon = await CouponModel.findOne({ code: couponCode });
+
+  if (!coupon) {
+    return res.status(404).json({ message: "Coupon not found or invalid" });
+  }
+
+  const discount = coupon.discount;
+
+  res.json({ discount });
+});
+
 module.exports = {
   otpSendByEmail,
   registerUser,
@@ -654,4 +669,5 @@ module.exports = {
   goToPayment,
   createOrder,
   getOrderDetails,
+  applyCoupon
 };

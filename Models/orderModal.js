@@ -4,21 +4,21 @@ const orderSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // Assuming you have a User model
+      ref: "User", 
       required: true
     },
     items: [
       {
         item: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Product", // Assuming you have a Product model
+          ref: "Product", 
           required: true
         },
         quantity: {
           type: Number,
           required: true
         },
-        size: String // Assuming you want to include size information
+        size: String
       }
     ],
     address: {

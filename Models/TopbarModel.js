@@ -5,6 +5,8 @@ const TopBarSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+},{
+    timestamps: true
 });
 
 const TopBarModel = mongoose.model("topbar", TopBarSchema);

@@ -5,6 +5,7 @@ const ProductModal = require("../Models/productModal");
 const cloudinary = require("../Upload/cloudinary");
 const ProductModel = require("../Models/productModal");
 const TopBarModel = require("../Models/TopbarModel");
+const CouponModel = require("../Models/couponModel");
 
 // Admin Login ---------------
 const adminLogin = tryCatchHandler(async (req, res) => {
@@ -253,6 +254,7 @@ const editproduct = tryCatchHandler(async (req, res) => {
   res.json(product);
 });
 
+// TopbarTextCreating-----------------------
 const topbarTextCreating = tryCatchHandler(async (req, res) => {
   const { text } = req.body;
 
@@ -268,6 +270,66 @@ const topbarTextCreating = tryCatchHandler(async (req, res) => {
     message: "Content added successfully",
   });
 });
+// CreateCoupon----------------------------
+const createCoupon = tryCatchHandler(async (req, res) => {
+  const { code, discount } = req.body;
+
+  if (!code || !discount) {
+    return res.status(404).json({ message: "Add the coupon and discount" });
+  }
+  const checkCoupon = await CouponModel.find({ code: code });
+  if (checkCoupon.length > 0) {
+    return res.status(400).json({
+      message: "Coupon already exists",
+    });
+  }
+  const newCoupon = await CouponModel.create({ code, discount });
+
+  res.status(201).json({
+    message: "Coupon created succesful!",
+    coupon: newCoupon,
+  });
+});
+// GetAllCoupons------------------------
+const getAllCoupons = tryCatchHandler(async (req, res) => {
+  const coupons = await CouponModel.find();
+  res.status(200).json(coupons);
+});
+// DeleteCoupon----------------------------
+const deleteCoupon = async (req, res) => {
+  const { couponId } = req.params;
+  const deletedCoupon = await CouponModel.findByIdAndDelete(couponId);
+
+  res.status(200).json({
+    message: "Coupon deleted successfully!",
+    deletedCoupon: deletedCoupon,
+  });
+};
+
+const blockCoupon = tryCatchHandler(async (req, res) => {
+  const { couponId } = req.params;
+
+  const coupon = await CouponModel.findByIdAndUpdate(couponId, {
+    isBlocked: true,
+  });
+  res.json(coupon);
+});
+
+const unblockCoupon = tryCatchHandler(async (req, res) => {
+  const { couponId } = req.params;
+
+  const updatedCoupon = await CouponModel.findByIdAndUpdate(
+    couponId,
+    { isBlocked: false },
+    { new: true }
+  );
+
+  if (!updatedCoupon) {
+    return res.status(404).json({ message: "Coupon not found" });
+  }
+
+  res.json(updatedCoupon);
+});
 
 module.exports = {
   adminLogin,
@@ -280,4 +342,9 @@ module.exports = {
   getProductsById,
   editproduct,
   topbarTextCreating,
+  createCoupon,
+  getAllCoupons,
+  deleteCoupon,
+  blockCoupon,
+  unblockCoupon,
 };
