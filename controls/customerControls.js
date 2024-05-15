@@ -646,7 +646,7 @@ const applyCoupon = tryCatchHandler(async (req, res) => {
   }
 
   const discount = coupon.discount;
-
+console.log(discount);
   res.json({ discount });
 });
 
@@ -669,5 +669,5 @@ module.exports = {
   goToPayment,
   createOrder,
   getOrderDetails,
-  applyCoupon
+  applyCoupon,
 };
