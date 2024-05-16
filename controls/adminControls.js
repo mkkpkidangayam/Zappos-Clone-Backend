@@ -237,6 +237,7 @@ const getProductsById = tryCatchHandler(async (req, res) => {
   }
 });
 
+// Editproduct-------------------------------
 const editproduct = tryCatchHandler(async (req, res) => {
   const { id } = req.params;
   const { title, price, brand, images, sizes, info } = req.body;
@@ -255,11 +256,11 @@ const editproduct = tryCatchHandler(async (req, res) => {
 });
 
 // TopbarTextCreating-----------------------
-const topbarTextCreating = tryCatchHandler(async (req, res) => {
+const topbarContentCreating = tryCatchHandler(async (req, res) => {
   const { text } = req.body;
 
   if (!text) {
-    return res.status(404).json({ message: "Content not found" });
+    return res.status(404).json({ message: "Enter a content" });
   }
 
   const newContent = new TopBarModel({ text });
@@ -267,9 +268,17 @@ const topbarTextCreating = tryCatchHandler(async (req, res) => {
   await newContent.save();
 
   res.status(201).json({
+    content: newContent,
     message: "Content added successfully",
   });
 });
+
+// GetAllContents--------------------
+const getAllContents = tryCatchHandler(async (req, res) => {
+  const contents = await TopBarModel.find();
+  res.status(200).json(contents);
+});
+
 // CreateCoupon----------------------------
 const createCoupon = tryCatchHandler(async (req, res) => {
   const { code, discount } = req.body;
@@ -305,7 +314,7 @@ const deleteCoupon = async (req, res) => {
     deletedCoupon: deletedCoupon,
   });
 };
-
+// BlockCoupon------------
 const blockCoupon = tryCatchHandler(async (req, res) => {
   const { couponId } = req.params;
 
@@ -315,6 +324,7 @@ const blockCoupon = tryCatchHandler(async (req, res) => {
   res.json(coupon);
 });
 
+// UnblockCoupon---------------
 const unblockCoupon = tryCatchHandler(async (req, res) => {
   const { couponId } = req.params;
 
@@ -341,10 +351,11 @@ module.exports = {
   productList,
   getProductsById,
   editproduct,
-  topbarTextCreating,
+  topbarContentCreating,
   createCoupon,
   getAllCoupons,
   deleteCoupon,
   blockCoupon,
   unblockCoupon,
+  getAllContents
 };

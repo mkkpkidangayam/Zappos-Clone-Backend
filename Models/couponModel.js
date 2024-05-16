@@ -13,6 +13,10 @@ const couponSchema = new mongoose.Schema(
       min: 0,
       max: 100,
     },
+    usageCount: {
+      type: Number,
+      default: 0,
+    },
     isBlocked: {
       type: Boolean,
       default: false,

@@ -26,6 +26,6 @@ router.route("/add-to-wishlist").post(authentication, controller.addWishlist);
 router.route("/wishlist/:id").get(authentication, controller.displayWishlist);
 router.route("/remove-from-wishlist/:userId/:productId").delete(authentication, controller.removeFromWislist);
 
-router.get("/apply-coupon", authentication, controller.applyCoupon)
+router.post("/apply-coupon", authentication, controller.applyCoupon)
 
 module.exports = router;

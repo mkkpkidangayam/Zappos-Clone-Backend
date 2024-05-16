@@ -377,6 +377,7 @@ const deleteAddress = tryCatchHandler(async (req, res) => {
 // payment-----------------
 const goToPayment = tryCatchHandler(async (req, res) => {
   const { userId } = req.params;
+  const { appliedDiscount } = req.body;
 
   const user = await CustomerModel.findById(userId);
   if (!user) {
@@ -392,13 +393,19 @@ const goToPayment = tryCatchHandler(async (req, res) => {
     if (!product) {
       throw new Error(`Product with ID ${cartItem.product} not found`);
     }
+
+    let finalPrice = product.price;
+    if (appliedDiscount && appliedDiscount > 0 && appliedDiscount <= 100) {
+      finalPrice = product.price * (1 - appliedDiscount / 100);
+    }
+
     line_items.push({
       price_data: {
         currency: "inr",
         product_data: {
           name: product.title,
         },
-        unit_amount: Math.round(product.price * 100),
+        unit_amount: Math.round(finalPrice * 100),
       },
       quantity: cartItem.quantity,
     });
@@ -636,18 +643,28 @@ const getOrderDetails = tryCatchHandler(async (req, res) => {
   return res.status(200).json(orderDetails);
 });
 
+//Apply coupon ---------------------------
 const applyCoupon = tryCatchHandler(async (req, res) => {
   const { couponCode } = req.body;
 
-  const coupon = await CouponModel.findOne({ code: couponCode });
+  if (!couponCode) {
+    return res.status(404).json({ message: "Please enter a coupon!" });
+  }
 
-  if (!coupon) {
+  const coupon = await CouponModel.findOne({ code: couponCode });
+  if (!coupon || coupon.isBlocked) {
     return res.status(404).json({ message: "Coupon not found or invalid" });
   }
 
   const discount = coupon.discount;
-console.log(discount);
-  res.json({ discount });
+
+  coupon.usageCount += 1;
+  await coupon.save();
+  
+  res.json({
+    message: "Coupon applied successfully!",
+    discount: discount,
+  });
 });
 
 module.exports = {
