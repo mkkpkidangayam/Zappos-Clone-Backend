@@ -279,6 +279,17 @@ const getAllContents = tryCatchHandler(async (req, res) => {
   res.status(200).json(contents);
 });
 
+// DeleteContent---------------------
+const deleteContent = async (req, res) => {
+  const { contentId } = req.params;
+  const deletedContent = await TopBarModel.findByIdAndDelete(contentId);
+
+  res.status(200).json({
+    message: "Content deleted successfully!",
+    deletedContent: deletedContent,
+  });
+};
+
 // CreateCoupon----------------------------
 const createCoupon = tryCatchHandler(async (req, res) => {
   const { code, discount } = req.body;
@@ -299,11 +310,13 @@ const createCoupon = tryCatchHandler(async (req, res) => {
     coupon: newCoupon,
   });
 });
+
 // GetAllCoupons------------------------
 const getAllCoupons = tryCatchHandler(async (req, res) => {
   const coupons = await CouponModel.find();
   res.status(200).json(coupons);
 });
+
 // DeleteCoupon----------------------------
 const deleteCoupon = async (req, res) => {
   const { couponId } = req.params;
@@ -314,6 +327,7 @@ const deleteCoupon = async (req, res) => {
     deletedCoupon: deletedCoupon,
   });
 };
+
 // BlockCoupon------------
 const blockCoupon = tryCatchHandler(async (req, res) => {
   const { couponId } = req.params;
@@ -357,5 +371,6 @@ module.exports = {
   deleteCoupon,
   blockCoupon,
   unblockCoupon,
-  getAllContents
+  getAllContents,
+  deleteContent,
 };

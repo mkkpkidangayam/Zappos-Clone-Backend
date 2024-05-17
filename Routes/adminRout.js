@@ -26,8 +26,9 @@ router.get("/admin/product/edit/:id", adminAuth, adminControl.editproduct);
 
 router.post("/admin/topbar-content/create", adminControl.topbarContentCreating);
 router.get("/admin/get-contents", adminControl.getAllContents);
+router.delete("/admin/delete-content/:contentId", adminAuth, adminControl.deleteContent);
 
-router.post("/admin/create-coupon", adminControl.createCoupon);
+router.post("/admin/create-coupon", adminAuth, adminControl.createCoupon);
 router.get("/admin/get-coupons", adminAuth, adminControl.getAllCoupons);
 router.delete("/admin/delete-coupon/:couponId", adminAuth, adminControl.deleteCoupon);
 router.patch("/admin/coupon-block/:couponId", adminAuth, adminControl.blockCoupon);

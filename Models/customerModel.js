@@ -1,7 +1,4 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
-const moment = require("moment-timezone");
-// const { tryCatchHandler  } = require("../Middleware/trycatchHandler");
 
 const AddressSchema = new mongoose.Schema({
   street: {

@@ -1,4 +1,3 @@
-
 const tryCatchHandler = (controller) => async (req, res, next) => {
   try {
     await controller(req, res);
