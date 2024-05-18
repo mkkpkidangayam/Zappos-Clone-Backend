@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controls/customerControls");
+const orderControl =require("../controls/orderControls")
 const authentication = require("../Middleware/authentication");
 
 router.route("/register").post(controller.registerUser);
@@ -19,8 +20,8 @@ router.route("/user/:userId/address/:addressId").put(authentication, controller.
 router.route("/user/:userId/address/:addressId").delete(authentication, controller.deleteAddress);
 
 router.route("/checkout/:userId").post(authentication, controller.goToPayment);
-router.route("/create-order/:userId").post(authentication, controller.createOrder);
-router.route("/user/:userId/orders").get(authentication, controller.getOrderDetails);
+router.route("/create-order/:userId").post(authentication, orderControl.createOrder);
+router.route("/user/:userId/orders").get(authentication, orderControl.getOrderDetails);
 
 router.route("/add-to-wishlist").post(authentication, controller.addWishlist);
 router.route("/wishlist/:id").get(authentication, controller.displayWishlist);

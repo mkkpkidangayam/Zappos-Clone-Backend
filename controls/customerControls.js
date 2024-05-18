@@ -426,102 +426,6 @@ const goToPayment = tryCatchHandler(async (req, res) => {
 });
 
 //create order-------------------------
-const createOrder = tryCatchHandler(async (req, res) => {
-  const { userId } = req.params;
-  const { selectedAddressId } = req.body;
-
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
-    const user = await CustomerModel.findById(userId).session(session);
-    if (!user) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(404).send("User not found");
-    }
-
-    const shippingAddress = user.address.find(
-      (addr) => addr._id.toString() === selectedAddressId
-    );
-    if (!shippingAddress) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(404).send("Address not found");
-    }
-
-    if (user.cart.length === 0) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(400).send("Cart is empty");
-    }
-
-    const productIds = user.cart.map((item) => item.product);
-    const products = await ProductModel.find({
-      _id: { $in: productIds },
-    }).session(session);
-
-    const newOrder = [];
-
-    for (const cartItem of user.cart) {
-      const product = products.find(
-        (p) => p._id.toString() === cartItem.product.toString()
-      );
-      if (!product) {
-        await session.abortTransaction();
-        session.endSession();
-        return res.status(404).send(`Product not found: ${cartItem.product}`);
-      }
-
-      const sizeIndex = product.sizes.findIndex(
-        (size) => size.size === cartItem.size
-      );
-      if (sizeIndex === -1) {
-        await session.abortTransaction();
-        session.endSession();
-        return res
-          .status(400)
-          .send(
-            `Size ${cartItem.size} not found for product: ${product.title}`
-          );
-      }
-
-      if (product.sizes[sizeIndex].quantity < cartItem.quantity) {
-        await session.abortTransaction();
-        session.endSession();
-        return res
-          .status(400)
-          .send(
-            `Insufficient quantity for size ${cartItem.size} of product: ${product.title}`
-          );
-      }
-
-      product.sizes[sizeIndex].quantity -= cartItem.quantity;
-      await product.save({ session });
-
-      newOrder.push({
-        item: cartItem.product,
-        size: cartItem.size,
-        quantity: cartItem.quantity,
-        address: shippingAddress,
-        orderTime: new Date(),
-      });
-    }
-
-    user.order.push(...newOrder);
-    user.cart = [];
-    await user.save({ session });
-
-    await session.commitTransaction();
-    session.endSession();
-    res.status(200).send("Order created successfully");
-  } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
-    res.status(500).send("Failed to create order due to an internal error");
-  }
-});
-
 // const createOrder = tryCatchHandler(async (req, res) => {
 //   const { userId } = req.params;
 //   const { selectedAddressId } = req.body;
@@ -537,7 +441,9 @@ const createOrder = tryCatchHandler(async (req, res) => {
 //       return res.status(404).send("User not found");
 //     }
 
-//     const shippingAddress = user.address.find((addr) => addr._id.toString() === selectedAddressId);
+//     const shippingAddress = user.address.find(
+//       (addr) => addr._id.toString() === selectedAddressId
+//     );
 //     if (!shippingAddress) {
 //       await session.abortTransaction();
 //       session.endSession();
@@ -550,73 +456,59 @@ const createOrder = tryCatchHandler(async (req, res) => {
 //       return res.status(400).send("Cart is empty");
 //     }
 
-//     const productIds = user.cart.map(item => item.product);
-//     const products = await ProductModel.find({_id: { $in: productIds }}).session(session);
+//     const productIds = user.cart.map((item) => item.product);
+//     const products = await ProductModel.find({
+//       _id: { $in: productIds },
+//     }).session(session);
 
-//     const newOrderItems = [];
+//     const newOrder = [];
 
 //     for (const cartItem of user.cart) {
-//       const product = products.find(p => p._id.toString() === cartItem.product.toString());
+//       const product = products.find(
+//         (p) => p._id.toString() === cartItem.product.toString()
+//       );
 //       if (!product) {
 //         await session.abortTransaction();
 //         session.endSession();
 //         return res.status(404).send(`Product not found: ${cartItem.product}`);
 //       }
 
-//       const sizeIndex = product.sizes.findIndex((size) => size.size === cartItem.size);
+//       const sizeIndex = product.sizes.findIndex(
+//         (size) => size.size === cartItem.size
+//       );
 //       if (sizeIndex === -1) {
 //         await session.abortTransaction();
 //         session.endSession();
-//         return res.status(400).send(`Size ${cartItem.size} not found for product: ${product.title}`);
+//         return res
+//           .status(400)
+//           .send(
+//             `Size ${cartItem.size} not found for product: ${product.title}`
+//           );
 //       }
 
 //       if (product.sizes[sizeIndex].quantity < cartItem.quantity) {
 //         await session.abortTransaction();
 //         session.endSession();
-//         return res.status(400).send(`Insufficient quantity for size ${cartItem.size} of product: ${product.title}`);
+//         return res
+//           .status(400)
+//           .send(
+//             `Insufficient quantity for size ${cartItem.size} of product: ${product.title}`
+//           );
 //       }
 
 //       product.sizes[sizeIndex].quantity -= cartItem.quantity;
 //       await product.save({ session });
 
-//       newOrderItems.push({
+//       newOrder.push({
 //         item: cartItem.product,
 //         size: cartItem.size,
 //         quantity: cartItem.quantity,
+//         address: shippingAddress,
 //         orderTime: new Date(),
 //       });
 //     }
 
-//     const calculateTotalPrice = async (cartItems) => {
-//       let totalPrice = 0;
-
-//       for (const cartItem of cartItems) {
-//         try {
-//           const product = await ProductModel.findById(cartItem.product);
-//           if (product) {
-//             const itemPrice = product.price;
-//             totalPrice += itemPrice * cartItem.quantity;
-//           } else {
-//             console.error(`Product not found: ${cartItem.product}`);
-//           }
-//         } catch (error) {
-//           console.error(`Error fetching product: ${error}`);
-//         }
-//       }
-
-//       return totalPrice;
-//     };
-
-//     const order = new OrderModel({
-//       user: userId,
-//       items: newOrderItems,
-//       address: shippingAddress,
-//       totalPrice: calculateTotalPrice(user.cart), // You need to implement this function
-//       status: "pending"
-//     });
-
-//     await order.save({ session });
-
+//     user.order.push(...newOrder);
 //     user.cart = [];
 //     await user.save({ session });
 
@@ -626,22 +518,11 @@ const createOrder = tryCatchHandler(async (req, res) => {
 //   } catch (error) {
 //     await session.abortTransaction();
 //     session.endSession();
-//     console.error(error);
 //     res.status(500).send("Failed to create order due to an internal error");
 //   }
 // });
 
-//Fetching order details--------------------------
-const getOrderDetails = tryCatchHandler(async (req, res) => {
-  const { userId } = req.params;
-  const user = await CustomerModel.findById(userId).populate("order.product");
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
-  }
 
-  const orderDetails = user.order;
-  return res.status(200).json(orderDetails);
-});
 
 //Apply coupon ---------------------------
 const applyCoupon = tryCatchHandler(async (req, res) => {
@@ -684,7 +565,5 @@ module.exports = {
   getAddresses,
   deleteAddress,
   goToPayment,
-  createOrder,
-  getOrderDetails,
   applyCoupon,
 };

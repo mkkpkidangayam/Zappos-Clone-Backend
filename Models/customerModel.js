@@ -56,34 +56,38 @@ const CustomerSchema = new mongoose.Schema(
         quantity: { type: Number },
       },
     ],
-    order: [
-      {
-        item: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
-          required: true,
-        },
-        size: { type: String },
-        quantity: { type: Number },
-        address: {
-          type: AddressSchema,
-          required: true,
-        },
-        orderTime: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
+
     address: [AddressSchema],
     isBlocked: {
-      type: Boolean,  
+      type: Boolean,
       default: false,
     },
-  },  
+
+    order: [{ type: mongoose.Schema.Types.ObjectId }],
+  },
   { timestamps: true }
 );
 
 const CustomerModel = mongoose.model("customers", CustomerSchema);
 
 module.exports = CustomerModel;
+
+// order: [
+//   {
+//     item: {
+//       type: mongoose.Schema.Types.ObjectId,
+//       ref: "Product",
+//       required: true,
+//     },
+//     size: { type: String },
+//     quantity: { type: Number },
+//     address: {
+//       type: AddressSchema,
+//       required: true,
+//     },
+//     orderTime: {
+//       type: Date,
+//       default: Date.now,
+//     },
+//   },
+// ],
