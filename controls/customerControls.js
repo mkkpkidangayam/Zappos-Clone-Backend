@@ -538,9 +538,6 @@ const applyCoupon = tryCatchHandler(async (req, res) => {
   }
 
   const discount = coupon.discount;
-
-  coupon.usageCount += 1;
-  await coupon.save();
   
   res.json({
     message: "Coupon applied successfully!",

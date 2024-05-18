@@ -61,6 +61,10 @@ const orderSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  appliedCoupon: {
+    type: String,
+    default: "nil"
+  }
 });
 
 const OrderModel = mongoose.model("orders", orderSchema);
