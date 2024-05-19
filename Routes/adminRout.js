@@ -32,7 +32,7 @@ router.post("/admin/create-coupon", adminAuth, adminControl.createCoupon);
 router.get("/admin/get-coupons", adminAuth, adminControl.getAllCoupons);
 router.delete("/admin/delete-coupon/:couponId", adminAuth, adminControl.deleteCoupon);
 router.patch("/admin/coupon-block/:couponId", adminAuth, adminControl.blockCoupon);
-router.patch("/admin/coupon-unblock/:couponId", adminAuth, adminControl.unblockCoupon);
 
+router.get("/admin/orders",  adminControl.getAllOrders);
 
 module.exports = router;

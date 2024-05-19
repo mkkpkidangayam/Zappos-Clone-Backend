@@ -6,6 +6,7 @@ const cloudinary = require("../Upload/cloudinary");
 const ProductModel = require("../Models/productModal");
 const TopBarModel = require("../Models/TopbarModel");
 const CouponModel = require("../Models/couponModel");
+const OrderModel = require("../Models/orderModal");
 
 // Admin Login ---------------
 const adminLogin = tryCatchHandler(async (req, res) => {
@@ -40,8 +41,6 @@ const adminLogin = tryCatchHandler(async (req, res) => {
 });
 
 // View all users--------------------------
-// adminControl.js
-
 const usersList = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
@@ -355,6 +354,15 @@ const unblockCoupon = tryCatchHandler(async (req, res) => {
   res.json(updatedCoupon);
 });
 
+const getAllOrders = tryCatchHandler(async (req, res) => {
+  const orders = await OrderModel.find()
+    .populate("customer", "name email")
+    .populate("items.item", "title price")
+    .exec();
+  res.status(200).send(orders);
+  console.log(orders);
+});
+
 module.exports = {
   adminLogin,
   usersList,
@@ -373,4 +381,5 @@ module.exports = {
   unblockCoupon,
   getAllContents,
   deleteContent,
+  getAllOrders,
 };
