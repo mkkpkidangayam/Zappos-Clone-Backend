@@ -409,22 +409,33 @@ const updateOrder = tryCatchHandler(async (req, res) => {
 const orderStatus = tryCatchHandler(async (req, res) => {
   const orderDetails = await OrderModel.find();
 
-  let totalOrderCount = 0;
-  let totalOrderPrice = 0;
+  const totalOrderCount = orderDetails.length;
+  const totalOrderPrice = orderDetails.reduce(
+    (total, order) => total + order.totalPrice,
+    0
+  ).toFixed(2);
 
-  orderDetails.forEach((order) => {
-    totalOrderCount += 1; 
-    totalOrderPrice += order.totalPrice; 
-  });
+  const currentDate = new Date();
+  const lastMonthDate = new Date();
+  lastMonthDate.setMonth(currentDate.getMonth() - 1);
 
-  totalOrderPrice = totalOrderPrice.toFixed(2);
+  const monthlyRevenueOrders = orderDetails.filter(
+    (order) =>
+      order.createdAt >= lastMonthDate && order.createdAt <= currentDate
+  );
+  const monthlyRevenue = monthlyRevenueOrders.reduce(
+    (total, order) => total + order.totalPrice,
+    0
+  ).toFixed(2);
 
   res.json({
     message: "User order details retrieved successfully.",
     totalOrderCount: totalOrderCount,
     totalOrderPrice: totalOrderPrice,
+    monthlyRevenue: monthlyRevenue,
   });
 });
+
 
 
 module.exports = {
