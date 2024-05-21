@@ -405,6 +405,28 @@ const updateOrder = tryCatchHandler(async (req, res) => {
   res.status(200).send(updatedOrder);
 });
 
+// Order status
+const orderStatus = tryCatchHandler(async (req, res) => {
+  const orderDetails = await OrderModel.find();
+
+  let totalOrderCount = 0;
+  let totalOrderPrice = 0;
+
+  orderDetails.forEach((order) => {
+    totalOrderCount += 1; 
+    totalOrderPrice += order.totalPrice; 
+  });
+
+  totalOrderPrice = totalOrderPrice.toFixed(2);
+
+  res.json({
+    message: "User order details retrieved successfully.",
+    totalOrderCount: totalOrderCount,
+    totalOrderPrice: totalOrderPrice,
+  });
+});
+
+
 module.exports = {
   adminLogin,
   usersList,
@@ -426,4 +448,5 @@ module.exports = {
   getAllOrders,
   getOrderById,
   updateOrder,
+  orderStatus,
 };

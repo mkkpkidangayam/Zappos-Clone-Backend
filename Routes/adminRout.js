@@ -37,4 +37,6 @@ router.get("/admin/orders", adminAuth, adminControl.getAllOrders);
 router.get("/admin/order/:orderId", adminAuth, adminControl.getOrderById);
 router.put("/admin/order/update/:orderId", adminAuth, adminControl.updateOrder);
 
+router.get("/admin/order-status", adminAuth, adminControl.orderStatus);
+
 module.exports = router;
