@@ -5,8 +5,6 @@ const config = require("../Config/config");
 const nodemailer = require("nodemailer");
 const CustomerModel = require("../Models/customerModel");
 const ProductModel = require("../Models/productModal");
-const { default: mongoose } = require("mongoose");
-const OrderModel = require("../Models/orderModal");
 const CouponModel = require("../Models/couponModel");
 const stripeID = require("stripe")(process.env.stripe_secret_key);
 
