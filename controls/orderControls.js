@@ -129,11 +129,17 @@ const createOrder = tryCatchHandler(async (req, res) => {
 //Fetching order details--------------------------
 const getOrderDetails = tryCatchHandler(async (req, res) => {
   const { userId } = req.params;
-  const user = await CustomerModel.findById(userId).populate("orders");
+  const user = await CustomerModel.findById(userId).populate({
+    path: "orders",
+    populate: {
+      path: "items.item",
+      model: "Product",
+    },
+  });
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
-
+ 
   const orderDetails = user.orders;
   return res.status(200).json(orderDetails);
 });

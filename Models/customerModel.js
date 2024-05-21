@@ -63,7 +63,7 @@ const CustomerSchema = new mongoose.Schema(
       default: false,
     },
 
-    orders: [{ type: mongoose.Schema.Types.ObjectId }],
+    orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "orders" }],
   },
   { timestamps: true }
 );

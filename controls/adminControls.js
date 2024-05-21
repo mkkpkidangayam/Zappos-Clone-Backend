@@ -354,13 +354,55 @@ const unblockCoupon = tryCatchHandler(async (req, res) => {
   res.json(updatedCoupon);
 });
 
+// GetAllOrders-----------------------------
 const getAllOrders = tryCatchHandler(async (req, res) => {
   const orders = await OrderModel.find()
     .populate("customer", "name email")
     .populate("items.item", "title price")
     .exec();
   res.status(200).send(orders);
-  console.log(orders);
+});
+
+const getOrderById = tryCatchHandler(async (req, res) => {
+  const { orderId } = req.params;
+  if (!orderId) {
+    return res.status(404).json({
+      message: "OrderId not found",
+    });
+  }
+  const orderById = await OrderModel.findById(orderId)
+    .populate("customer", "name email")
+    .populate("items.item", "title price")
+    .exec();
+
+  if (!orderById) {
+    return res.status(404).json({
+      message: "Order not found",
+    });
+  }
+
+  res.status(200).send(orderById);
+});
+
+const updateOrder = tryCatchHandler(async (req, res) => {
+  const { orderId } = req.params;
+  const { status } = req.body;
+
+  if (!orderId) {
+    return res.status(404).json({
+      message: "OrderId not found",
+    });
+  }
+  if (!status) {
+    return res.status(404).json({
+      message: "status not get",
+    });
+  }
+  const updatedOrder = await OrderModel.findByIdAndUpdate(
+    { _id: orderId },
+    { status: status }
+  );
+  res.status(200).send(updatedOrder);
 });
 
 module.exports = {
@@ -382,4 +424,6 @@ module.exports = {
   getAllContents,
   deleteContent,
   getAllOrders,
+  getOrderById,
+  updateOrder,
 };

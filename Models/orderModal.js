@@ -64,10 +64,6 @@ const orderSchema = new mongoose.Schema(
       ],
       default: "pending",
     },
-    // createdAt: {
-    //   type: Date,
-    //   default: Date.now,
-    // },
     appliedCoupon: {
       type: String,
       default: "nil",

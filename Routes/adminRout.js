@@ -33,6 +33,8 @@ router.get("/admin/get-coupons", adminAuth, adminControl.getAllCoupons);
 router.delete("/admin/delete-coupon/:couponId", adminAuth, adminControl.deleteCoupon);
 router.patch("/admin/coupon-block/:couponId", adminAuth, adminControl.blockCoupon);
 
-router.get("/admin/orders",  adminControl.getAllOrders);
+router.get("/admin/orders", adminAuth, adminControl.getAllOrders);
+router.get("/admin/order/:orderId", adminAuth, adminControl.getOrderById);
+router.put("/admin/order/update/:orderId", adminAuth, adminControl.updateOrder);
 
 module.exports = router;
