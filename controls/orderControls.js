@@ -135,7 +135,7 @@ const getOrderDetails = tryCatchHandler(async (req, res) => {
       path: "items.item",
       model: "Product",
     },
-  });
+  }).sort(-1);
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
