@@ -135,12 +135,12 @@ const getOrderDetails = tryCatchHandler(async (req, res) => {
       path: "items.item",
       model: "Product",
     },
-  }).sort(-1);
+  });
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
  
-  const orderDetails = user.orders;
+  const orderDetails = user.orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   return res.status(200).json(orderDetails);
 });
 
