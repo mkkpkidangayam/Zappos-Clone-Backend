@@ -414,8 +414,8 @@ const goToPayment = tryCatchHandler(async (req, res) => {
     payment_method_types: ["card"],
     mode: "payment",
     line_items: line_items,
-    success_url: `http://localhost:3000/payment-success/user/${userId}`,
-    cancel_url: `http://localhost:3000//payment-failure/user/${userId}`,
+    success_url: `https://mkkp-zappos.vercel.app/payment-success/user/${userId}`,
+    cancel_url: `https://mkkp-zappos.vercel.app/payment-failure/user/${userId}`,
   });
   const sessionId = session.id;
   const sessionUrl = session.url;
