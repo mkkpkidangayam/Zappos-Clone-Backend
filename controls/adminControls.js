@@ -360,7 +360,8 @@ const getAllOrders = tryCatchHandler(async (req, res) => {
     .populate("customer", "name email")
     .populate("items.item", "title price")
     .exec();
-  res.status(200).send(orders);
+    const sortedordersList = orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  res.status(200).send(sortedordersList);
 });
 
 const getOrderById = tryCatchHandler(async (req, res) => {
