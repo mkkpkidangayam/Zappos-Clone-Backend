@@ -28,7 +28,7 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
   const hashedOTP = await bcrypt.hash(OTP.toString(), 10);
 
   // Set OTP cookie
-  res.cookie("otp", hashedOTP, { httpOnly: true, secure: true });
+  res.cookie("otp", hashedOTP,);
 
   // Send OTP to the user's email
   const transporter = nodemailer.createTransport({
