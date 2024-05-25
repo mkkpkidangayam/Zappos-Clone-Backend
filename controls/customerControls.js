@@ -65,12 +65,12 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
 
 //Verify OTP and add user to database------------------
 const registerUser = tryCatchHandler(async (req, res) => {
-  const { userData, otp } = req.body;
-  const { name, email, password, otpInCookie } = userData;
+  const { userData, otp, otpInCookie } = req.body;
+  const { name, email, password } = userData;
 
   // const otpInCookie = req.cookies.otp;
 
-
+console.log("otpInCookie: ", otpInCookie)
   if (!otpInCookie) {
     return res.status(404).json({
       success: false,
