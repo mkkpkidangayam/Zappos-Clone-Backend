@@ -59,6 +59,7 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
     res.status(200).json({
       message: `OTP sented to ${email} successfully`,
       success: true,
+      otp: hashedOTP
     });
   });
 });
