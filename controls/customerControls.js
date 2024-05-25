@@ -28,7 +28,12 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
   const hashedOTP = await bcrypt.hash(OTP.toString(), 10);
 
   // Set OTP cookie
-  res.cookie("otp", hashedOTP);
+  // res.cookie("otp", hashedOTP, {http });
+  res.cookie("otp", hashedOTP, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    maxAge: 10 * 60 * 1000, // Cookie expiry time (e.g., 10 minutes)
+  });
 
   // Send OTP to the user's email
   const transporter = nodemailer.createTransport({
