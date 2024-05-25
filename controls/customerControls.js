@@ -28,7 +28,7 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
   const hashedOTP = await bcrypt.hash(OTP.toString(), 10);
 
   // Set OTP cookie
-  res.cookie("otp", hashedOTP,);
+  res.cookie("otp", hashedOTP);
 
   // Send OTP to the user's email
   const transporter = nodemailer.createTransport({
@@ -64,6 +64,13 @@ const registerUser = tryCatchHandler(async (req, res) => {
   const { name, email, password } = userData;
 
   const otpInCookie = req.cookies.otp;
+
+  if (!otpInCookie) {
+    return res.status(404).json({
+      success: false,
+      message: "OTP not found in cookies",
+    });
+  }
 
   const checkUser = await CustomerModel.find({ email: email });
 
@@ -520,8 +527,6 @@ const goToPayment = tryCatchHandler(async (req, res) => {
 //   }
 // });
 
-
-
 //Apply coupon ---------------------------
 const applyCoupon = tryCatchHandler(async (req, res) => {
   const { couponCode } = req.body;
@@ -536,7 +541,7 @@ const applyCoupon = tryCatchHandler(async (req, res) => {
   }
 
   const discount = coupon.discount;
-  
+
   res.json({
     message: "Coupon applied successfully!",
     discount: discount,
