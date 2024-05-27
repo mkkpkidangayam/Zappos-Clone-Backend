@@ -29,11 +29,11 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
 
   // Set OTP cookie
   // res.cookie("otp", hashedOTP, {http });
-  res.cookie("otp", hashedOTP, {
-    httpOnly: true,
-    // secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-    maxAge: 10 * 60 * 1000, // Cookie expiry time (e.g., 10 minutes)
-  });
+  // res.cookie("otp", hashedOTP, {
+  //   httpOnly: true,
+  //   // secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+  //   maxAge: 10 * 60 * 1000, // Cookie expiry time (e.g., 10 minutes)
+  // });
 
   // Send OTP to the user's email
   const transporter = nodemailer.createTransport({
@@ -71,7 +71,7 @@ const registerUser = tryCatchHandler(async (req, res) => {
 
   // const otpInCookie = req.cookies.otp;
 
-console.log("otpInCookie: ", otpInCookie)
+
   if (!otpInCookie) {
     return res.status(404).json({
       success: false,
