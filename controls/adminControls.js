@@ -165,6 +165,8 @@ const addProduct = tryCatchHandler(async (req, res) => {
 const addProductForForm = tryCatchHandler(async(req, res) => {
   const { title, info, price, brand, imageUrls, gender, category, sizes, color } = req.body;
 
+  console.log({ title, info, price, brand, imageUrls, gender, category, sizes, color });
+
   const imageFiles = req.files;
   const images = [...JSON.parse(imageUrls)];
 
