@@ -366,7 +366,9 @@ const getAddresses = tryCatchHandler(async (req, res) => {
   if (!user) {
     return res.status(404).send("User not found");
   }
-  res.status(200).json(user.address);
+  const addresses = user.address.reverse()
+
+  res.status(200).json(addresses);
 });
 
 //Delete address------------------
