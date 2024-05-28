@@ -162,6 +162,37 @@ const addProduct = tryCatchHandler(async (req, res) => {
   });
 });
 
+const addProductForForm = tryCatchHandler(async(req, res) => {
+  const { title, info, price, brand, imageUrls, gender, category, sizes, color } = req.body;
+
+  const imageFiles = req.files;
+  const images = [...JSON.parse(imageUrls)];
+
+  for (const file of imageFiles) {
+    const result = await cloudinary.uploader.upload(file.path);
+    images.push(result.secure_url);
+  }
+
+  const newProduct = new Product({
+    title,
+    info: JSON.parse(info),
+    price,
+    brand,
+    images,
+    gender,
+    category: {
+      main: category["main"],
+      sub: category["sub"],
+    },
+    sizes: JSON.parse(sizes),
+    color,
+    // ratings: JSON.parse(ratings),
+  });
+
+  await newProduct.save();
+  res.status(201).json({ message: "Product added successfully" });
+})
+
 //product listing----------------------------------
 // const productList = tryCatchHandler(async (req, res) => {
 //   const page = parseInt(req.query.page) || 1;
@@ -437,8 +468,6 @@ const orderStatus = tryCatchHandler(async (req, res) => {
   });
 });
 
-
-
 module.exports = {
   adminLogin,
   usersList,
@@ -446,6 +475,7 @@ module.exports = {
   unblockUser,
   deleteUserAccount,
   addProduct,
+  addProductForForm,
   productList,
   getProductsById,
   editproduct,
