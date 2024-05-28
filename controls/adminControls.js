@@ -173,7 +173,7 @@ const addProductForForm = tryCatchHandler(async(req, res) => {
     images.push(result.secure_url);
   }
 
-  const newProduct = new Product({
+  const newProduct = new ProductModal({
     title,
     info: JSON.parse(info),
     price,
