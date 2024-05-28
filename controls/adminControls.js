@@ -177,7 +177,7 @@ const addProductForForm = tryCatchHandler(async(req, res) => {
 
   const newProduct = new ProductModal({
     title,
-    info: JSON.parse(info),
+    info, //: JSON.parse(info),
     price,
     brand,
     images,
@@ -186,7 +186,7 @@ const addProductForForm = tryCatchHandler(async(req, res) => {
       main: category["main"],
       sub: category["sub"],
     },
-    sizes: JSON.parse(sizes),
+    sizes, //: JSON.parse(sizes),
     color,
     // ratings: JSON.parse(ratings),
   });
