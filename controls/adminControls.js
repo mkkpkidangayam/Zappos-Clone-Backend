@@ -162,38 +162,54 @@ const addProduct = tryCatchHandler(async (req, res) => {
   });
 });
 
-const addProductForForm = tryCatchHandler(async(req, res) => {
-  const { title, info, price, brand, imageUrls, gender, category, sizes, color } = req.body;
+const addProductForForm = tryCatchHandler(async (req, res) => {
+  const {
+    title,
+    info,
+    price,
+    brand,
+    gender,
+    category,
+    sizes,
+    color,
+    imageUrls,
+  } = req.body;
 
-  console.log({ title, info, price, brand, imageUrls, gender, category, sizes, color });
+  // Process image files uploaded via multer
+  const imageFiles = req.files.map((file) => file.buffer);
+  const cloudinaryResults = await Promise.all(
+    imageFiles.map((file) =>
+      cloudinary.uploader.upload_stream(
+        { resource_type: "image" },
+        (error, result) => {
+          if (error) {
+            console.error("Error uploading image to Cloudinary:", error);
+            res.status(500).json({ message: "Error uploading images" });
+          }
+          return result.secure_url;
+        }
+      )
+    )
+  );
 
-  const imageFiles = req.files;
-  const images = [...JSON.parse(imageUrls)];
-
-  for (const file of imageFiles) {
-    const result = await cloudinary.uploader.upload(file.path);
-    images.push(result.secure_url);
-  }
+  // Combine image URLs from the form with uploaded image URLs from Cloudinary
+  const images = [...JSON.parse(imageUrls), ...cloudinaryResults];
 
   const newProduct = new ProductModal({
     title,
-    info, //: JSON.parse(info),
+    info,
     price,
     brand,
     images,
     gender,
-    category: {
-      main: category["main"],
-      sub: category["sub"],
-    },
-    sizes, //: JSON.parse(sizes),
+    category,
+    sizes,
     color,
-    // ratings: JSON.parse(ratings),
   });
 
   await newProduct.save();
   res.status(201).json({ message: "Product added successfully" });
-})
+});
 
 //product listing----------------------------------
 // const productList = tryCatchHandler(async (req, res) => {
@@ -393,7 +409,9 @@ const getAllOrders = tryCatchHandler(async (req, res) => {
     .populate("customer", "name email")
     .populate("items.item", "title price")
     .exec();
-    const sortedordersList = orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const sortedordersList = orders.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
   res.status(200).send(sortedordersList);
 });
 
@@ -444,10 +462,9 @@ const orderStatus = tryCatchHandler(async (req, res) => {
   const orderDetails = await OrderModel.find();
 
   const totalOrderCount = orderDetails.length;
-  const totalOrderPrice = orderDetails.reduce(
-    (total, order) => total + order.totalPrice,
-    0
-  ).toFixed(2);
+  const totalOrderPrice = orderDetails
+    .reduce((total, order) => total + order.totalPrice, 0)
+    .toFixed(2);
 
   const currentDate = new Date();
   const lastMonthDate = new Date();
@@ -457,10 +474,9 @@ const orderStatus = tryCatchHandler(async (req, res) => {
     (order) =>
       order.createdAt >= lastMonthDate && order.createdAt <= currentDate
   );
-  const monthlyRevenue = monthlyRevenueOrders.reduce(
-    (total, order) => total + order.totalPrice,
-    0
-  ).toFixed(2);
+  const monthlyRevenue = monthlyRevenueOrders
+    .reduce((total, order) => total + order.totalPrice, 0)
+    .toFixed(2);
 
   res.json({
     message: "User order details retrieved successfully.",
