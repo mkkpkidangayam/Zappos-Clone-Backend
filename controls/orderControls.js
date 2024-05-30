@@ -7,7 +7,6 @@ const ProductModel = require("../Models/productModal");
 const createOrder = tryCatchHandler(async (req, res) => {
   const { userId } = req.params;
   const { selectedAddressId, couponCode } = req.body;
-  console.log(couponCode);
   const user = await CustomerModel.findById(userId);
   if (!user) {
     return res.status(404).send("User not found");
