@@ -7,7 +7,7 @@ const ProductModel = require("../Models/productModal");
 const createOrder = tryCatchHandler(async (req, res) => {
   const { userId } = req.params;
   const { selectedAddressId, couponCode } = req.body;
-
+  console.log(couponCode);
   const user = await CustomerModel.findById(userId);
   if (!user) {
     return res.status(404).send("User not found");
@@ -87,8 +87,6 @@ const createOrder = tryCatchHandler(async (req, res) => {
 
   let totalPrice = await calculateTotalPrice(user.cart);
 
- 
-
   if (couponCode) {
     const coupon = await CouponModel.findOne({
       code: couponCode,
@@ -125,7 +123,6 @@ const createOrder = tryCatchHandler(async (req, res) => {
   });
 });
 
-
 //Fetching order details--------------------------
 const getOrderDetails = tryCatchHandler(async (req, res) => {
   const { userId } = req.params;
@@ -139,8 +136,10 @@ const getOrderDetails = tryCatchHandler(async (req, res) => {
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
- 
-  const orderDetails = user.orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  const orderDetails = user.orders.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
   return res.status(200).json(orderDetails);
 });
 
