@@ -162,6 +162,7 @@ const addProduct = tryCatchHandler(async (req, res) => {
   });
 });
 
+// addProductForForm----------------------
 const addProductForForm = tryCatchHandler(async (req, res) => {
   const {
     title,
@@ -176,35 +177,36 @@ const addProductForForm = tryCatchHandler(async (req, res) => {
   } = req.body;
 
   // Process image files uploaded via multer
-  const imageFiles = req.files.map((file) => file.buffer);
-  const cloudinaryResults = await Promise.all(
-    imageFiles.map((file) =>
-      cloudinary.uploader.upload_stream(
-        { resource_type: "image" },
-        (error, result) => {
-          if (error) {
-            console.error("Error uploading image to Cloudinary:", error);
-            res.status(500).json({ message: "Error uploading images" });
-          }
-          return result.secure_url;
-        }
-      )
-    )
-  );
+  // const imageFiles = req.files.map((file) => file.buffer);
+  // const cloudinaryResults = await Promise.all(
+  //   imageFiles.map((file) =>
+  //     cloudinary.uploader.upload_stream(
+  //       { resource_type: "image" },
+  //       (error, result) => {
+  //         if (error) {
+  //           console.error("Error uploading image to Cloudinary:", error);
+  //           res.status(500).json({ message: "Error uploading images" });
+  //         }
+  //         return result.secure_url;
+  //       }
+  //     )
+  //   )
+  // );
 
-  // Combine image URLs from the form with uploaded image URLs from Cloudinary
-  const images = [...JSON.parse(imageUrls), ...cloudinaryResults];
+  // // Combine image URLs from the form with uploaded image URLs from Cloudinary
+  // const images = [...JSON.parse(imageUrls), ...cloudinaryResults];
 
   const newProduct = new ProductModal({
     title,
     info,
     price,
     brand,
-    images,
+    // images,
     gender,
     category,
     sizes,
     color,
+    imageUrls
   });
 
   await newProduct.save();
