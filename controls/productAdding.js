@@ -18,10 +18,9 @@ const createProduct = async () => {
     });
 
     // Save the product to the database
-    const savedProduct = await newProduct.save();
+    await newProduct.save();
     
 
-    console.log("Product created:", savedProduct);
   } catch (error) {
     console.error("Error creating product:", error);
   }
