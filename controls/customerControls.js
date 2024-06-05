@@ -59,7 +59,7 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
     res.status(200).json({
       message: `OTP sented to ${email} successfully`,
       success: true,
-      otp: hashedOTP
+      otp: hashedOTP,
     });
   });
 });
@@ -70,7 +70,6 @@ const registerUser = tryCatchHandler(async (req, res) => {
   const { name, email, password } = userData;
 
   // const otpInCookie = req.cookies.otp;
-
 
   if (!otpInCookie) {
     return res.status(404).json({
@@ -211,6 +210,7 @@ const getCart = tryCatchHandler(async (req, res) => {
     return res.status(404).json({ message: "User not found" });
   }
   const userCart = user.cart;
+  userCart.sort((a, b) => b.position - a.position);
   return res.status(200).json(userCart);
 });
 
@@ -366,7 +366,7 @@ const getAddresses = tryCatchHandler(async (req, res) => {
   if (!user) {
     return res.status(404).send("User not found");
   }
-  const addresses = user.address.reverse()
+  const addresses = user.address.reverse();
 
   res.status(200).json(addresses);
 });
