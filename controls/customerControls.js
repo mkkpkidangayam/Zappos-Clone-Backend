@@ -210,7 +210,7 @@ const getCart = tryCatchHandler(async (req, res) => {
     return res.status(404).json({ message: "User not found" });
   }
   const userCart = user.cart;
-  userCart.sort((a, b) => b.position - a.position);
+  userCart.reverse();
   return res.status(200).json(userCart);
 });
 
