@@ -150,10 +150,16 @@ const customerLogin = tryCatchHandler(async (req, res) => {
 
   // req.cookies = token
 
+  const userData = {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+  };
+
   res.status(200).cookie("token", token).json({
     token: token,
     message: "Sign-in successful. Start shopping...",
-    userData: user,
+    userData: userData,
   });
 });
 
