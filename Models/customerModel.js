@@ -54,6 +54,7 @@ const CustomerSchema = new mongoose.Schema(
         product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
         size: { type: String },
         quantity: { type: Number },
+        timestamp: { type: Date, default: Date.now }
       },
     ],
 
