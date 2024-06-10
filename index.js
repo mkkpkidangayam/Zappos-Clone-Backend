@@ -17,7 +17,8 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "https://mkkp-zappos.vercel.app",
+    // origin: "https://mkkp-zappos.vercel.app",
+    origin: "http://localhost:3000",
     credentials: true,
   })
 );
