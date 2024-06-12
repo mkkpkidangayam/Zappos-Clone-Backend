@@ -10,7 +10,7 @@ const stripeID = require("stripe")(process.env.stripe_secret_key);
 
 // Send OTP to customer email ---------------
 const otpSendByEmail = tryCatchHandler(async (req, res) => {
-  const { email } = req.body;
+  const { email, name } = req.body;
   const checkuser = await CustomerModel.findOne({ email: email });
 
   if (checkuser) {
@@ -44,9 +44,28 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
   const mailOptions = {
     from: config.email.user,
     to: email,
-    subject: "OTP for Account Verification",
-    html: `<p>Your OTP is: <strong>${OTP}</strong></p>`,
+    subject: "Your OTP for Account Verification",
+    html: `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h2 style="color: #333;">Account Verification</h2>
+        <p>Hello ${name},</p>
+        <p>Thank you for choosing <strong>MKKP-ZAPPOS</strong>. To complete your account setup, please use the following One-Time Password (OTP):</p>
+        <h3 style="color: #ff6600;">${OTP}</h3>
+        <p>Please enter this OTP in the verification screen to verify your account. This OTP is valid for the next 10 minutes.</p>
+        <p>If you did not request this OTP, please ignore this email or contact our support team.</p>
+        <p>Thank you,</p>
+        <p>The MKKP-ZAPPOS Team</p>
+      </div>
+    `,
   };
+  
+
+  // const mailOptions = {
+  //   from: config.email.user,
+  //   to: email,
+  //   subject: "OTP for Account Verification",
+  //   html: `<p>Thankyou ${name} for choosing <strong>MKKP-ZAPPOS<strong> Your OTP is for creating account : <strong>${OTP}<strong></p>`,
+  // };
 
   transporter.sendMail(mailOptions, async (err, info) => {
     if (err) {
