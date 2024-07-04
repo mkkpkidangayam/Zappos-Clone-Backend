@@ -46,6 +46,11 @@ const CustomerSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters"],
     },
+    
+    isGoogleLogin: {
+      type: Boolean,
+      default: false,
+    },
 
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
 
@@ -54,7 +59,7 @@ const CustomerSchema = new mongoose.Schema(
         product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
         size: { type: String },
         quantity: { type: Number },
-        timestamp: { type: Date, default: Date.now }
+        timestamp: { type: Date, default: Date.now },
       },
     ],
 

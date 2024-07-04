@@ -7,6 +7,7 @@ const CustomerModel = require("../Models/customerModel");
 const ProductModel = require("../Models/productModal");
 const CouponModel = require("../Models/couponModel");
 const stripeID = require("stripe")(process.env.stripe_secret_key);
+const axios = require("axios");
 
 // Send OTP to customer email ---------------
 const otpSendByEmail = tryCatchHandler(async (req, res) => {
@@ -58,7 +59,6 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
       </div>
     `,
   };
-  
 
   // const mailOptions = {
   //   from: config.email.user,
@@ -179,6 +179,44 @@ const customerLogin = tryCatchHandler(async (req, res) => {
     token: token,
     message: "Sign-in successful. Start shopping...",
     userData: userData,
+  });
+});
+
+//Google-login-----------------------------------------
+const googleLogin = tryCatchHandler(async (req, res) => {
+  const { token } = req.body;
+
+  const response = await axios.get(
+    `https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${token}`
+  );
+  console.log(response.data);
+  const { email, name } = response.data;
+  let user = await CustomerModel.findOne({ email });
+
+  if (!user) {
+    user = new CustomerModel({
+      email,
+      name,
+      password: "Google",
+      isGoogleLogin: true,
+    });
+    await user.save();
+  }
+
+  const jwtToken = jwt.sign(
+    { id: user._id, email: user.email },
+    process.env.JWT_SECRET,
+    { expiresIn: "1d" }
+  );
+
+  const userData = {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+  };
+  res.status(201).json({
+    token: jwtToken,
+    userData,
   });
 });
 
@@ -586,6 +624,7 @@ module.exports = {
   otpSendByEmail,
   registerUser,
   customerLogin,
+  googleLogin,
   userProfile,
   addToCart,
   getCart,
