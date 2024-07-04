@@ -186,11 +186,14 @@ const customerLogin = tryCatchHandler(async (req, res) => {
 const googleLogin = tryCatchHandler(async (req, res) => {
   const { token } = req.body;
 
-  const response = await axios.get(
-    `https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${token}`
+  console.log("Received token:", token);
+
+  const response = await fetch(
+    `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token}`
   );
-  console.log(response.data);
-  const { email, name } = response.data;
+  const googleData = await response.json();
+  console.log("Google response:", googleData);
+  const { email, name } = googleData;
   let user = await CustomerModel.findOne({ email });
 
   if (!user) {

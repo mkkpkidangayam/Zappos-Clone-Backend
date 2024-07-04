@@ -30,7 +30,6 @@ const CustomerSchema = new mongoose.Schema(
       type: String,
       required: [true, "name is required"],
       trim: true,
-      maxlength: [24, "Username cannot exceed 24 characters"],
     },
 
     email: {
@@ -46,7 +45,7 @@ const CustomerSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters"],
     },
-    
+
     isGoogleLogin: {
       type: Boolean,
       default: false,
