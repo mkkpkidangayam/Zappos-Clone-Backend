@@ -8,6 +8,8 @@ router.route("/register").post(controller.registerUser);
 router.route("/otpsend").post(controller.otpSendByEmail);
 router.route("/login").post(controller.customerLogin);
 router.route("/google-login").post(controller.googleLogin);
+router.route("/forgot-password").post(controller.forgotPassword);
+router.route("/reset-password/:token").post(controller.resetPassword);
 router.route("/user/profile/:userId").get(authentication, controller.userProfile);
 
 router.route("/add-to-cart").post(authentication, controller.addToCart);

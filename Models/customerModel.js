@@ -71,6 +71,8 @@ const CustomerSchema = new mongoose.Schema(
     },
 
     orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "orders" }],
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
   },
   { timestamps: true }
 );

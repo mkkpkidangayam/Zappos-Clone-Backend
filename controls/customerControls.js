@@ -7,7 +7,7 @@ const CustomerModel = require("../Models/customerModel");
 const ProductModel = require("../Models/productModal");
 const CouponModel = require("../Models/couponModel");
 const stripeID = require("stripe")(process.env.stripe_secret_key);
-const axios = require("axios");
+const crypto = require("crypto");
 
 // Send OTP to customer email ---------------
 const otpSendByEmail = tryCatchHandler(async (req, res) => {
@@ -197,7 +197,6 @@ const googleLogin = tryCatchHandler(async (req, res) => {
     user = new CustomerModel({
       email,
       name,
-      // password: "Google",
       loginType: "Google",
     });
     await user.save();
@@ -229,9 +228,70 @@ const googleLogin = tryCatchHandler(async (req, res) => {
 });
 
 // Forgot password---------------------------------------
-const forgotPassword = tryCatchHandler(async(req, res) =>{
+const forgotPassword = tryCatchHandler(async (req, res) => {
+  const { email } = req.body;
+  console.log(email)
 
-})
+  const user = await CustomerModel.findOne({ email });
+  if (!user) {
+    return res.status(404).send("User not found");
+  }
+
+  const token = crypto.randomBytes(32).toString("hex");
+  user.resetPasswordToken = token;
+  user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+  await user.save();
+
+  // const transporter = nodemailer.createTransport({
+  //   service: "Gmail",
+  //   auth: {
+  //     user: config.email.user,
+  //     pass: process.env.PASSWORD,
+  //   },
+  // });
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: { user: config.email.user, pass: config.email.pass },
+  });
+
+  const mailOptions = {
+    to: user.email,
+    from: config.email.user,
+    subject: "Password Reset",
+    text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+      Please click on the following link, or paste this into your browser to complete the process:\n\n
+      https://mkkp-zappos.vercel.app/reset-password/${token}\n\n
+      If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+  };
+
+  await transporter.sendMail(mailOptions);
+
+  res.status(200).send("Reset link sent to your email");
+});
+
+const resetPassword = tryCatchHandler(async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  const user = await CustomerModel.findOne({
+    resetPasswordToken: token,
+    resetPasswordExpires: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return res
+      .status(400)
+      .send("Password reset token is invalid or has expired.");
+  }
+
+  user.password = bcrypt.hashSync(password, 10);
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpires = undefined;
+  await user.save();
+
+  res.status(200).send("Password has been reset");
+});
 
 //Fetch User data to profile----------------------------
 const userProfile = tryCatchHandler(async (req, res) => {
@@ -638,6 +698,8 @@ module.exports = {
   registerUser,
   customerLogin,
   googleLogin,
+  forgotPassword,
+  resetPassword,
   userProfile,
   addToCart,
   getCart,
