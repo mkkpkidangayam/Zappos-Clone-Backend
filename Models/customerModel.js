@@ -42,7 +42,9 @@ const CustomerSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      required: [true, "Password is required"],
+      required: function () {
+        return this.loginType !== "Google";
+      },
       minlength: [6, "Password must be at least 6 characters"],
     },
 

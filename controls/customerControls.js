@@ -197,7 +197,7 @@ const googleLogin = tryCatchHandler(async (req, res) => {
     user = new CustomerModel({
       email,
       name,
-      password: "Google",
+      // password: "Google",
       loginType: "Google",
     });
     await user.save();
