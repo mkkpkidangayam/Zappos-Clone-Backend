@@ -230,7 +230,6 @@ const googleLogin = tryCatchHandler(async (req, res) => {
 // Forgot password---------------------------------------
 const forgotPassword = tryCatchHandler(async (req, res) => {
   const { email } = req.body;
-  console.log(email)
 
   const user = await CustomerModel.findOne({ email });
   if (!user) {
