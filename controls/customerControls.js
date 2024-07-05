@@ -228,6 +228,11 @@ const googleLogin = tryCatchHandler(async (req, res) => {
   });
 });
 
+// Forgot password---------------------------------------
+const forgotPassword = tryCatchHandler(async(req, res) =>{
+
+})
+
 //Fetch User data to profile----------------------------
 const userProfile = tryCatchHandler(async (req, res) => {
   const { userId } = req.params;
