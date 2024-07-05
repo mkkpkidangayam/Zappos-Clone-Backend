@@ -46,9 +46,9 @@ const CustomerSchema = new mongoose.Schema(
       minlength: [6, "Password must be at least 6 characters"],
     },
 
-    isGoogleLogin: {
-      type: Boolean,
-      default: false,
+    loginType: {
+      type: String,
+      default: "email",
     },
 
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],

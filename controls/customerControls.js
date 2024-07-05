@@ -178,7 +178,7 @@ const customerLogin = tryCatchHandler(async (req, res) => {
   res.status(200).cookie("token", token).json({
     token: token,
     message: "Sign-in successful. Start shopping...",
-    userData: userData,
+    userData,
   });
 });
 
@@ -186,13 +186,10 @@ const customerLogin = tryCatchHandler(async (req, res) => {
 const googleLogin = tryCatchHandler(async (req, res) => {
   const { token } = req.body;
 
-  console.log("Received token:", token);
-
   const response = await fetch(
     `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token}`
   );
   const googleData = await response.json();
-  console.log("Google response:", googleData);
   const { email, name } = googleData;
   let user = await CustomerModel.findOne({ email });
 
@@ -201,9 +198,16 @@ const googleLogin = tryCatchHandler(async (req, res) => {
       email,
       name,
       password: "Google",
-      isGoogleLogin: true,
+      loginType: "Google",
     });
     await user.save();
+  }
+
+  if (user.isBlocked) {
+    return res.status(403).json({
+      success: false,
+      message: "Account is blocked. Please contact support.",
+    });
   }
 
   const jwtToken = jwt.sign(
@@ -219,6 +223,7 @@ const googleLogin = tryCatchHandler(async (req, res) => {
   };
   res.status(201).json({
     token: jwtToken,
+    message: "Sign-in successful. Start shopping...",
     userData,
   });
 });
