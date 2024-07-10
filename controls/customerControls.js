@@ -22,7 +22,7 @@ const otpSendByEmail = tryCatchHandler(async (req, res) => {
   }
 
   // Generate OTP
-  const OTP = Math.floor(1000 + Math.random() * 9000);
+  const OTP = Math.floor(100000 + Math.random() * 900000);
 
   console.log("Generated OTP: " + OTP);
 
