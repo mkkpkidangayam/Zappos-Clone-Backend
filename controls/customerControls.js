@@ -316,6 +316,13 @@ const addToCart = tryCatchHandler(async (req, res) => {
     return res.status(404).json({ message: "User not found" });
   }
 
+  if (user.isBlocked) {
+    return res.status(403).json({
+      success: false,
+      message: "Account is blocked. Please contact support.",
+    });
+  }
+
   const product = await ProductModel.findById(productId);
   if (!product) {
     return res.status(404).json({ message: "Product not found" });
@@ -341,9 +348,18 @@ const addToCart = tryCatchHandler(async (req, res) => {
 const getCart = tryCatchHandler(async (req, res) => {
   const userId = req.params.id;
   const user = await CustomerModel.findById(userId).populate("cart.product");
+
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
+
+  if (user.isBlocked) {
+    return res.status(403).json({
+      success: false,
+      message: "Account is blocked. Please contact support.",
+    });
+  }
+
   const userCart = user.cart;
   userCart.reverse();
   return res.status(200).json(userCart);
@@ -393,6 +409,13 @@ const addWishlist = tryCatchHandler(async (req, res) => {
     });
   }
 
+  if (user.isBlocked) {
+    return res.status(403).json({
+      success: false,
+      message: "Account is blocked. Please contact support.",
+    });
+  }
+
   // Check if the product is already in the wishlist
   const productCheck = user.wishlist.includes(productId);
 
@@ -433,6 +456,13 @@ const displayWishlist = tryCatchHandler(async (req, res) => {
     });
   }
 
+  if (user.isBlocked) {
+    return res.status(403).json({
+      success: false,
+      message: "Account is blocked. Please contact support.",
+    });
+  }
+
   const wishListData = user.wishlist;
 
   return res.status(200).json(wishListData);
@@ -467,6 +497,14 @@ const addNewAddress = tryCatchHandler(async (req, res) => {
   const newAddress = req.body;
 
   const user = await CustomerModel.findById(userId);
+
+  if (user.isBlocked) {
+    return res.status(403).json({
+      success: false,
+      message: "Account is blocked. Please contact support.",
+    });
+  }
+
   user.address.push(newAddress);
   await user.save();
   res.status(201).send("Address added successfully");
@@ -478,6 +516,13 @@ const editAddress = tryCatchHandler(async (req, res) => {
   const updatedAddress = req.body;
 
   const user = await CustomerModel.findById(userId);
+
+  if (user.isBlocked) {
+    return res.status(403).json({
+      success: false,
+      message: "Account is blocked. Please contact support.",
+    });
+  }
 
   const addressIndex = user.address.findIndex(
     (addr) => addr._id.toString() === addressId
@@ -531,6 +576,13 @@ const goToPayment = tryCatchHandler(async (req, res) => {
   const user = await CustomerModel.findById(userId);
   if (!user) {
     return res.status(404).send("User not found");
+  }
+
+  if (user.isBlocked) {
+    return res.status(403).json({
+      success: false,
+      message: "Account is blocked. Please contact support.",
+    });
   }
 
   const cartData = user.cart;
