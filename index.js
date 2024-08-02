@@ -22,6 +22,20 @@ app.use(
     credentials: true,
   })
 );
+
+// Cron-job--------------------------------
+app.get('/run-scheduled-task', async (req, res) => {
+  try {
+      await performScheduledTask(); 
+      res.send('Cron job executed');
+  } catch (error) {
+      res.status(500).send('Error executing cron job');
+  }
+});
+
+const performScheduledTask = async () => {
+  console.log('Scheduled task executed');
+};
  
 app.use("/api", customerRoute);
 
